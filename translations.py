@@ -88,6 +88,61 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         # Help
         "help_title": "🎮 TatiBot Help",
         "help_description": "A Discord bot for organizing game nights! Vote on games and find the perfect match for your group.\n\nEach server has its own game list and votes. Use `/language` to change your preferred language.",
+        "help_how_it_works": "📖 How It Works",
+        "help_how_it_works_value": "1. **Vote**: Use `/vote` to rate games from 1-5 stars\n"
+                                   "2. **Availability**: Voting marks you as available for game night\n"
+                                   "3. **Unavailable**: Use `/unavailable` to mark yourself unavailable (votes preserved)\n"
+                                   "4. **Available**: Use `/available` to mark yourself available again (votes restored)\n"
+                                   "5. **Results**: Use `/results` to see the top recommended game\n"
+                                   "6. **Auto Reset**: Votes reset every Wednesday at 11:59 PM\n"
+                                   "7. **Reminders**: Bot reminds everyone to vote every Sunday at 8 PM",
+        "help_voting_commands": "⭐ Voting Commands",
+        "help_voting_commands_value": "**`/vote`** - Open interactive voting interface\n"
+                                      "• Select games from dropdown and rate them 1-5\n"
+                                      "• Default rating is 5 if not specified\n"
+                                      "• Games not voted on = rating 0\n"
+                                      "• Table updates automatically after each vote\n"
+                                      "• Use 'Restore Last Votes' to restore previous week's votes\n"
+                                      "• Voting automatically marks you as available\n\n"
+                                      "**`/myvotes`** - View all your current votes and availability status\n\n"
+                                      "**`/unavailable`** - Mark yourself unavailable (keeps your votes)\n\n"
+                                      "**`/available`** - Mark yourself available again (restores your votes)",
+        "help_game_management": "🎮 Game Management",
+        "help_game_management_value": "**`/addgame <name> [min_players] [max_players] [emoji]`**\n"
+                                      "• Add a new game (defaults: min=1, max=10, emoji=🎮)\n"
+                                      "• Games get unique IDs automatically\n\n"
+                                      "**`/listgames`** - Show all games with IDs and player counts\n\n"
+                                      "**`/removegame <ID or name>`** - Remove a game by ID or name\n\n"
+                                      "**`/updategame`** - Interactive menu to update game properties\n\n"
+                                      "**`/setgameemoji <game> <emoji>`** - Change a game's emoji",
+        "help_results_utilities": "📊 Results & Utilities",
+        "help_results_utilities_value": "**`/results`** - Show top 5 compatible games\n"
+                                        "• Filters games by player count compatibility\n"
+                                        "• Only counts available players (not marked unavailable)\n"
+                                        "• Shows scores based on available users' votes\n\n"
+                                        "**`/language <lang>`** - Set your preferred language\n"
+                                        "• Choose English (en) or Français (fr)\n"
+                                        "• All bot messages will appear in your language\n\n"
+                                        "**`/clearvotes`** - Manually clear all votes (saves backup)\n\n"
+                                        "**`/sync`** - Force sync commands (admin only)",
+        "help_rating_system": "⭐ Rating System",
+        "help_rating_system_value": "**1 ⭐** - Don't want to play\n"
+                                    "**2 ⭐⭐** - Prefer not to\n"
+                                    "**3 ⭐⭐⭐** - Neutral/OK\n"
+                                    "**4 ⭐⭐⭐⭐** - Want to play\n"
+                                    "**5 ⭐⭐⭐⭐⭐** - Really want to play!",
+        "help_tips": "💡 Tips",
+        "help_tips_value": "• Use game IDs for easier management (shown in `/listgames`)\n"
+                           "• Voting automatically marks you as available\n"
+                           "• Use `/unavailable` to mark yourself unavailable (votes are preserved)\n"
+                           "• Use `/available` to restore your votes when you're back\n"
+                           "• Votes auto-reset every Wednesday at 11:59 PM\n"
+                           "• Previous votes are backed up automatically\n"
+                           "• Games must match player count to appear in results\n"
+                           "• Each server has its own separate game list and votes\n"
+                           "• Use `/language` to change your preferred language",
+        "help_footer": "Need more help? Check the README or ask an admin!",
+        "error_server_only": "❌ This command can only be used in a server!",
     },
     "fr": {
         # Common
@@ -163,6 +218,61 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         # Help
         "help_title": "🎮 Aide TatiBot",
         "help_description": "Un bot Discord pour organiser des soirées jeux ! Votez pour les jeux et trouvez le match parfait pour votre groupe.\n\nChaque serveur a sa propre liste de jeux et ses votes. Utilisez `/language` pour changer votre langue préférée.",
+        "help_how_it_works": "📖 Comment Ça Marche",
+        "help_how_it_works_value": "1. **Votez** : Utilisez `/vote` pour noter les jeux de 1 à 5 étoiles\n"
+                                   "2. **Disponibilité** : Voter vous marque comme disponible pour la soirée jeu\n"
+                                   "3. **Indisponible** : Utilisez `/unavailable` pour vous marquer indisponible (votes préservés)\n"
+                                   "4. **Disponible** : Utilisez `/available` pour vous marquer disponible à nouveau (votes restaurés)\n"
+                                   "5. **Résultats** : Utilisez `/results` pour voir le jeu recommandé\n"
+                                   "6. **Réinitialisation Auto** : Les votes se réinitialisent chaque mercredi à 23h59\n"
+                                   "7. **Rappels** : Le bot rappelle à tout le monde de voter chaque dimanche à 20h",
+        "help_voting_commands": "⭐ Commandes de Vote",
+        "help_voting_commands_value": "**`/vote`** - Ouvrir l'interface de vote interactive\n"
+                                      "• Sélectionnez des jeux dans le menu déroulant et notez-les de 1 à 5\n"
+                                      "• La note par défaut est 5 si non spécifiée\n"
+                                      "• Les jeux non votés = note 0\n"
+                                      "• Le tableau se met à jour automatiquement après chaque vote\n"
+                                      "• Utilisez 'Restaurer les Derniers Votes' pour restaurer les votes de la semaine précédente\n"
+                                      "• Voter vous marque automatiquement comme disponible\n\n"
+                                      "**`/myvotes`** - Voir tous vos votes actuels et votre statut de disponibilité\n\n"
+                                      "**`/unavailable`** - Vous marquer indisponible (garde vos votes)\n\n"
+                                      "**`/available`** - Vous marquer disponible à nouveau (restaure vos votes)",
+        "help_game_management": "🎮 Gestion des Jeux",
+        "help_game_management_value": "**`/addgame <name> [min_players] [max_players] [emoji]`**\n"
+                                      "• Ajouter un nouveau jeu (par défaut : min=1, max=10, emoji=🎮)\n"
+                                      "• Les jeux obtiennent des ID uniques automatiquement\n\n"
+                                      "**`/listgames`** - Afficher tous les jeux avec leurs ID et nombre de joueurs\n\n"
+                                      "**`/removegame <ID ou nom>`** - Supprimer un jeu par ID ou nom\n\n"
+                                      "**`/updategame`** - Menu interactif pour modifier les propriétés d'un jeu\n\n"
+                                      "**`/setgameemoji <game> <emoji>`** - Changer l'emoji d'un jeu",
+        "help_results_utilities": "📊 Résultats et Utilitaires",
+        "help_results_utilities_value": "**`/results`** - Afficher les 5 meilleurs jeux compatibles\n"
+                                        "• Filtre les jeux par compatibilité du nombre de joueurs\n"
+                                        "• Ne compte que les joueurs disponibles (non marqués indisponibles)\n"
+                                        "• Affiche les scores basés sur les votes des utilisateurs disponibles\n\n"
+                                        "**`/language <lang>`** - Définir votre langue préférée\n"
+                                        "• Choisissez English (en) ou Français (fr)\n"
+                                        "• Tous les messages du bot apparaîtront dans votre langue\n\n"
+                                        "**`/clearvotes`** - Effacer manuellement tous les votes (sauvegarde une copie)\n\n"
+                                        "**`/sync`** - Forcer la synchronisation des commandes (admin uniquement)",
+        "help_rating_system": "⭐ Système de Notation",
+        "help_rating_system_value": "**1 ⭐** - Ne veut pas jouer\n"
+                                    "**2 ⭐⭐** - Préfère ne pas\n"
+                                    "**3 ⭐⭐⭐** - Neutre/OK\n"
+                                    "**4 ⭐⭐⭐⭐** - Veut jouer\n"
+                                    "**5 ⭐⭐⭐⭐⭐** - Veut vraiment jouer !",
+        "help_tips": "💡 Conseils",
+        "help_tips_value": "• Utilisez les ID de jeu pour une gestion plus facile (affichés dans `/listgames`)\n"
+                           "• Voter vous marque automatiquement comme disponible\n"
+                           "• Utilisez `/unavailable` pour vous marquer indisponible (votes préservés)\n"
+                           "• Utilisez `/available` pour restaurer vos votes quand vous revenez\n"
+                           "• Les votes se réinitialisent automatiquement chaque mercredi à 23h59\n"
+                           "• Les votes précédents sont sauvegardés automatiquement\n"
+                           "• Les jeux doivent correspondre au nombre de joueurs pour apparaître dans les résultats\n"
+                           "• Chaque serveur a sa propre liste de jeux et ses votes séparés\n"
+                           "• Utilisez `/language` pour changer votre langue préférée",
+        "help_footer": "Besoin d'aide ? Consultez le README ou demandez à un admin !",
+        "error_server_only": "❌ Cette commande ne peut être utilisée que dans un serveur !",
     }
 }
 

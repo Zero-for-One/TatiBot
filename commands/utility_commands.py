@@ -20,7 +20,8 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
     async def language(interaction: discord.Interaction, lang: str):
         """Set user's preferred language."""
         if not interaction.guild:
-            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            t = lambda k: get_translation(k, lang="en")
+            await interaction.response.send_message(t("error_server_only"), ephemeral=True)
             return
             
         guild_id = interaction.guild.id
@@ -56,7 +57,8 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
     async def help_command(interaction: discord.Interaction):
         """Display help information about the bot and its commands."""
         if not interaction.guild:
-            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            t = lambda k: get_translation(k, lang="en")
+            await interaction.response.send_message(t("error_server_only"), ephemeral=True)
             return
             
         guild_id = interaction.guild.id
@@ -71,88 +73,47 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
         
         # How It Works
         embed.add_field(
-            name="📖 How It Works",
-            value="1. **Vote**: Use `/vote` to rate games from 1-5 stars\n"
-                  "2. **Availability**: Voting marks you as available for game night\n"
-                  "3. **Unavailable**: Use `/unavailable` to mark yourself unavailable (votes preserved)\n"
-                  "4. **Available**: Use `/available` to mark yourself available again (votes restored)\n"
-                  "5. **Results**: Use `/results` to see the top recommended game\n"
-                  "6. **Auto Reset**: Votes reset every Wednesday at 11:59 PM\n"
-                  "7. **Reminders**: Bot reminds everyone to vote every Sunday at 8 PM",
+            name=t("help_how_it_works"),
+            value=t("help_how_it_works_value"),
             inline=False
         )
         
         # Voting Commands
         embed.add_field(
-            name="⭐ Voting Commands",
-            value="**`/vote`** - Open interactive voting interface\n"
-                  "• Select games from dropdown and rate them 1-5\n"
-                  "• Default rating is 5 if not specified\n"
-                  "• Games not voted on = rating 0\n"
-                  "• Table updates automatically after each vote\n"
-                  "• Use 'Restore Last Votes' to restore previous week's votes\n"
-                  "• Voting automatically marks you as available\n\n"
-                  "**`/myvotes`** - View all your current votes and availability status\n\n"
-                  "**`/unavailable`** - Mark yourself unavailable (keeps your votes)\n\n"
-                  "**`/available`** - Mark yourself available again (restores your votes)",
+            name=t("help_voting_commands"),
+            value=t("help_voting_commands_value"),
             inline=False
         )
         
         # Game Management Commands
         embed.add_field(
-            name="🎮 Game Management",
-            value="**`/addgame <name> [min_players] [max_players] [emoji]`**\n"
-                  "• Add a new game (defaults: min=1, max=10, emoji=🎮)\n"
-                  "• Games get unique IDs automatically\n\n"
-                  "**`/listgames`** - Show all games with IDs and player counts\n\n"
-                  "**`/removegame <ID or name>`** - Remove a game by ID or name\n\n"
-                  "**`/updategame`** - Interactive menu to update game properties\n\n"
-                  "**`/setgameemoji <game> <emoji>`** - Change a game's emoji",
+            name=t("help_game_management"),
+            value=t("help_game_management_value"),
             inline=False
         )
         
         # Results & Utilities
         embed.add_field(
-            name="📊 Results & Utilities",
-            value="**`/results`** - Show top 5 compatible games\n"
-                  "• Filters games by player count compatibility\n"
-                  "• Only counts available players (not marked unavailable)\n"
-                  "• Shows scores based on available users' votes\n\n"
-                  "**`/language <lang>`** - Set your preferred language\n"
-                  "• Choose English (en) or Français (fr)\n"
-                  "• All bot messages will appear in your language\n\n"
-                  "**`/clearvotes`** - Manually clear all votes (saves backup)\n\n"
-                  "**`/sync`** - Force sync commands (admin only)",
+            name=t("help_results_utilities"),
+            value=t("help_results_utilities_value"),
             inline=False
         )
         
         # Rating System
         embed.add_field(
-            name="⭐ Rating System",
-            value="**1 ⭐** - Don't want to play\n"
-                  "**2 ⭐⭐** - Prefer not to\n"
-                  "**3 ⭐⭐⭐** - Neutral/OK\n"
-                  "**4 ⭐⭐⭐⭐** - Want to play\n"
-                  "**5 ⭐⭐⭐⭐⭐** - Really want to play!",
+            name=t("help_rating_system"),
+            value=t("help_rating_system_value"),
             inline=False
         )
         
         # Tips & Notes
         embed.add_field(
-            name="💡 Tips",
-            value="• Use game IDs for easier management (shown in `/listgames`)\n"
-                  "• Voting automatically marks you as available\n"
-                  "• Use `/unavailable` to mark yourself unavailable (votes are preserved)\n"
-                  "• Use `/available` to restore your votes when you're back\n"
-                  "• Votes auto-reset every Wednesday at 11:59 PM\n"
-                  "• Previous votes are backed up automatically\n"
-                  "• Games must match player count to appear in results\n"
-                  "• Each server has its own separate game list and votes\n"
-                  "• Use `/language` to change your preferred language",
+            name=t("help_tips"),
+            value=t("help_tips_value"),
             inline=False
         )
         
-        embed.set_footer(text="Need more help? Check the README or ask an admin!")
+        embed.set_footer(text=t("help_footer"))
         
         await interaction.response.send_message(embed=embed, ephemeral=True)
         logger.info(f"Help command used by {interaction.user} (ID: {interaction.user.id}) in guild {guild_id}")
@@ -161,7 +122,8 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
     async def results(interaction: discord.Interaction):
         """Show voting results and the most wanted game based on votes and player count."""
         if not interaction.guild:
-            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            t = lambda k: get_translation(k, lang="en")
+            await interaction.response.send_message(t("error_server_only"), ephemeral=True)
             return
             
         guild_id = interaction.guild.id
@@ -207,13 +169,13 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
         
         if not compatible_games:
             embed = discord.Embed(
-                title="📊 Voting Results",
-                description=f"**Available Players:** {available_players}",
+                title=t("results_title"),
+                description=t("results_available_players", count=available_players),
                 color=discord.Color.orange()
             )
             embed.add_field(
-                name="⚠️ No Compatible Games",
-                value=f"With {available_players} player(s), no games match the player count requirements.",
+                name=t("results_no_compatible"),
+                value=t("results_no_compatible_desc", count=available_players),
                 inline=False
             )
             
@@ -237,18 +199,18 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
         
         # Create results embed
         embed = discord.Embed(
-            title="📊 Voting Results",
-            description=f"**Available Players:** {available_players}",
+            title=t("results_title"),
+            description=t("results_available_players", count=available_players),
             color=discord.Color.gold()
         )
         
         # Show the winner
         best_emoji = best_game.get('emoji', '🎮')
         embed.add_field(
-            name="🏆 Recommended Game",
+            name=t("results_recommended"),
             value=f"{best_emoji} **{best_game['name']}**\n"
-                  f"Score: {best_score} points\n"
-                  f"Players: {best_game['min_players']}-{best_game['max_players']} ✅",
+                  f"{t('results_recommended_score', score=best_score)}\n"
+                  f"{t('results_recommended_players', min=best_game['min_players'], max=best_game['max_players'])}",
             inline=False
         )
         
@@ -264,9 +226,10 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
             )
         
         total_compatible = len(compatible_games)
-        field_name = "Top 5 Compatible Games" if total_compatible > 5 else "All Compatible Games"
         if total_compatible > 5:
-            field_name += f" (showing 5 of {total_compatible})"
+            field_name = t("results_top_showing", total=total_compatible)
+        else:
+            field_name = t("results_all_games")
         
         embed.add_field(
             name=field_name,
@@ -289,7 +252,8 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
     async def clearvotes(interaction: discord.Interaction):
         """Clear all votes. Use this to start a new voting period."""
         if not interaction.guild:
-            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            t = lambda k: get_translation(k, lang="en")
+            await interaction.response.send_message(t("error_server_only"), ephemeral=True)
             return
             
         guild_id = interaction.guild.id
@@ -315,8 +279,11 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
         """Force sync commands to this server for instant updates."""
         # Check if user has admin permissions
         if not interaction.user.guild_permissions.administrator:
+            guild_id = interaction.guild.id if interaction.guild else None
+            user_id = str(interaction.user.id)
+            t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw) if guild_id else get_translation(k, lang="en", **kw)
             await interaction.response.send_message(
-                "❌ You need administrator permissions to use this command.",
+                t("error_need_admin"),
                 ephemeral=True
             )
             return
@@ -325,17 +292,23 @@ def setup_utility_commands(bot: discord.ext.commands.Bot):
         
         try:
             # Sync to this specific guild for instant update
+            guild_id = interaction.guild.id
+            user_id = str(interaction.user.id)
+            t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
+            
             bot.tree.copy_global_to(guild=interaction.guild)
             synced = await bot.tree.sync(guild=interaction.guild)
             
             await interaction.followup.send(
-                f"✅ Successfully synced {len(synced)} command(s) to this server!\n"
-                f"Commands should be available immediately.",
+                t("sync_success", count=len(synced)),
                 ephemeral=True
             )
         except Exception as e:
+            guild_id = interaction.guild.id if interaction.guild else None
+            user_id = str(interaction.user.id)
+            t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw) if guild_id else get_translation(k, lang="en", **kw)
             await interaction.followup.send(
-                f"❌ Failed to sync commands: {e}",
+                t("sync_error", error=str(e)),
                 ephemeral=True
             )
 
