@@ -6,12 +6,14 @@ A Discord bot to help organize game nights by allowing friends to vote on games 
 
 - 🎮 **Game Management**: Add, remove, and update games with player count requirements and custom emojis
 - ⭐ **Interactive Voting System**: Rate games from 1-5 using dropdown menus with live table updates
-- 👥 **Availability Tracking**: Voting automatically marks you as available for game night
+- 👥 **Availability Tracking**: Mark yourself available/unavailable while preserving your votes
 - 📊 **Smart Results**: Shows top 5 compatible games based on votes and player count
 - ⏰ **Automatic Reminders**: Sends reminders every Sunday at 8 PM to vote
 - 🔄 **Auto Reset**: Automatically resets votes every Wednesday at 11:59 PM with backup
 - 💾 **Vote Restoration**: Restore your personal votes from the previous voting period
 - 🗂️ **Game IDs**: Easy game management with unique IDs for each game
+- 🌐 **Multi-Language Support**: Choose between English and Français (French)
+- 🏢 **Per-Server Data**: Each Discord server has its own separate game list and votes
 - 📝 **Logging**: Daily log files created at midnight for tracking bot activity
 - 🧹 **Auto Cleanup**: Automatically deletes old vote backups (30+ days) and logs (7+ days)
 
@@ -96,8 +98,15 @@ The bot should now be online in your Discord server!
 - `/myvotes` - View all your current votes in detail
   - Shows games you've voted on and their ratings
   - Shows games you haven't voted on (rating 0)
+  - Displays your availability status
 
-- `/unavailable` - Mark yourself as unavailable (removes all your votes)
+- `/unavailable` - Mark yourself as unavailable (keeps your votes)
+  - Your votes are preserved and will be restored when you mark yourself available again
+  - You won't be counted in results while unavailable
+
+- `/available` - Mark yourself as available again
+  - Restores your previous votes automatically
+  - You'll be counted in results again
 
 ### Results & Utilities
 
@@ -110,6 +119,11 @@ The bot should now be online in your Discord server!
   - Saves a backup before clearing
   - Use for emergency resets or manual testing
 
+- `/language <lang>` - Set your preferred language
+  - Choose between English (en) or Français (fr)
+  - All bot messages will appear in your chosen language
+  - Example: `/language lang:English`
+
 - `/sync` - Force sync commands to server (admin only)
   - Use this if commands aren't appearing after updates
   - Provides instant command updates without waiting
@@ -117,14 +131,19 @@ The bot should now be online in your Discord server!
 ## How It Works
 
 1. **Add Games**: Use `/addgame` to add games with their player count requirements and optional emoji
-2. **Vote**: Each week, players use `/vote` to open an interactive interface where they:
+2. **Set Language** (optional): Use `/language` to choose your preferred language (English/Français)
+3. **Vote**: Each week, players use `/vote` to open an interactive interface where they:
    - See all games in a live-updating table
    - Select games from a dropdown
    - Rate them 1-5 using another dropdown
    - Optionally restore votes from the previous week
-3. **Availability**: Anyone who votes is automatically marked as available for game night
-4. **Results**: Use `/results` to see the top 5 compatible games based on votes and player count
-5. **Automatic Workflow**:
+4. **Availability**: 
+   - Voting automatically marks you as available
+   - Use `/unavailable` to mark yourself unavailable (votes are preserved)
+   - Use `/available` to mark yourself available again (votes are restored)
+5. **Results**: Use `/results` to see the top 5 compatible games based on votes and player count
+   - Only counts available players (not marked as unavailable)
+6. **Automatic Workflow**:
    - **Sunday 8 PM**: Bot sends reminder to vote
    - **Wednesday 11:59 PM**: Bot automatically resets all votes and saves backup
    - **Daily 2 AM**: Bot cleans up old vote backups (30+ days) and log files (7+ days)
@@ -138,27 +157,33 @@ TatiBot/
 ├── data_manager.py        # Data loading/saving functions
 ├── logger_config.py       # Logging configuration
 ├── scheduler.py           # Scheduled tasks (reminders, resets, cleanup)
+├── translations.py         # Translation strings (English/French)
 ├── commands/              # Command modules
 │   ├── game_commands.py   # Game management commands
 │   ├── voting_commands.py # Voting commands
-│   └── utility_commands.py # Results, clear, sync commands
+│   └── utility_commands.py # Results, clear, sync, language, help
 ├── views/                 # Discord UI components
 │   ├── voting_view.py     # Interactive voting interface
 │   └── game_update.py     # Game update interface
 ├── data/                  # Data storage
-│   ├── games.json         # Games list
-│   ├── votes.json         # Current votes
-│   └── votes.old.*.json   # Vote backups (auto-created)
+│   └── guilds/            # Per-server data (one folder per server)
+│       └── {guild_id}/    # Server-specific data
+│           ├── games.json      # Games list for this server
+│           ├── votes.json      # Current votes for this server
+│           └── votes.old.*.json # Vote backups (auto-created)
 └── logs/                  # Log files
     └── bot_YYYY-MM-DD.log # Daily log files (created at midnight)
 ```
 
 ## Data Storage
 
-The bot stores data in the `data/` directory:
-- `games.json` - List of all games with IDs, names, player counts, and emojis
-- `votes.json` - Current votes and availability (user-specific)
-- `votes.old.YYYY-MM-DD.json` - Automatic vote backups when votes are reset
+The bot stores data per-server in the `data/guilds/` directory:
+- Each Discord server gets its own folder: `data/guilds/{server_id}/`
+- `games.json` - List of all games with IDs, names, player counts, and emojis (per server)
+- `votes.json` - Current votes, availability status, and language preferences (per server)
+- `votes.old.YYYY-MM-DD.json` - Automatic vote backups when votes are reset (per server)
+
+**Important**: Each server has completely separate game lists and votes. Users on different servers cannot see each other's games or votes.
 
 Log files are stored in the `logs/` directory:
 - `bot_YYYY-MM-DD.log` - One log file per day (created at midnight)
@@ -226,6 +251,19 @@ Log files are stored in the `logs/` directory:
 - **Vote Defaults**: 
   - Default rating is 5 (if not specified when voting)
   - Games not voted on default to rating 0
+- **Availability System**:
+  - Voting automatically marks you as available
+  - Use `/unavailable` to mark yourself unavailable (votes are preserved, not deleted)
+  - Use `/available` to mark yourself available again (votes are restored)
+  - Unavailable users are not counted in results or player count
+- **Language Support**:
+  - Each user can set their preferred language with `/language`
+  - Available languages: English (en) and Français (fr)
+  - All bot messages, placeholders, and options are translated
+- **Per-Server Data**:
+  - Each Discord server has its own game list and votes
+  - Data is stored in `data/guilds/{server_id}/`
+  - Servers are completely isolated from each other
 - **Backup Files**: Vote backups are automatically created when votes are reset (Wednesdays at 11:59 PM)
 - **Log Files**: 
   - One log file per day (created at midnight)

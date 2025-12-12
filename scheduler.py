@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from apscheduler.triggers.cron import CronTrigger
 from data_manager import save_old_votes, clear_votes
-from config import DATA_DIR
+from config import GUILDS_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +45,19 @@ async def send_sunday_reminder(bot):
 
 
 async def reset_votes_wednesday(bot):
-    """Reset votes every Wednesday at 11:59 PM and save backup."""
-    logger.info("Wednesday reset triggered - saving votes and clearing")
-    old_file = save_old_votes()
-    if old_file:
-        logger.info(f"Votes backed up to: {old_file}")
-    clear_votes(save_backup=False)
-    logger.info("All votes cleared for new voting period")
+    """Reset votes every Wednesday at 11:59 PM and save backup for each guild."""
+    logger.info("Wednesday reset triggered - saving votes and clearing for all guilds")
+    
+    # Process each guild separately
+    for guild in bot.guilds:
+        try:
+            old_file = save_old_votes(guild.id)
+            if old_file:
+                logger.info(f"Votes backed up to: {old_file} for guild {guild.name} (ID: {guild.id})")
+            clear_votes(guild.id, save_backup=False)
+            logger.info(f"Votes cleared for guild {guild.name} (ID: {guild.id})")
+        except Exception as e:
+            logger.error(f"Error resetting votes for guild {guild.name} (ID: {guild.id}): {e}", exc_info=True)
     
     embed = discord.Embed(
         title="🔄 Votes Reset!",
@@ -80,31 +86,39 @@ async def reset_votes_wednesday(bot):
 
 
 async def clean_old_votes(bot):
-    """Clean vote backup files older than 30 days."""
+    """Clean vote backup files older than 30 days for all guilds."""
     logger.info("Starting cleanup of old vote backup files (older than 30 days)")
     try:
-        old_files = list(DATA_DIR.glob("votes.old.*.json"))
         cutoff_date = datetime.now() - timedelta(days=30)
-        deleted_count = 0
+        total_deleted = 0
         
-        for old_file in old_files:
-            try:
-                # Extract date from filename: votes.old.YYYY-MM-DD.json
-                date_str = old_file.stem.split('.')[-1]  # Get last part after splitting by '.'
-                file_date = datetime.strptime(date_str, "%Y-%m-%d")
-                
-                if file_date < cutoff_date:
-                    old_file.unlink()
-                    deleted_count += 1
-                    logger.info(f"Deleted old vote backup: {old_file.name} (from {date_str})")
-            except (ValueError, IndexError) as e:
-                logger.warning(f"Could not parse date from filename {old_file.name}: {e}")
+        # Process each guild directory
+        for guild_dir in GUILDS_DIR.iterdir():
+            if not guild_dir.is_dir():
                 continue
-            except Exception as e:
-                logger.error(f"Error deleting {old_file.name}: {e}", exc_info=True)
+                
+            old_files = list(guild_dir.glob("votes.old.*.json"))
+            deleted_count = 0
+            
+            for old_file in old_files:
+                try:
+                    # Extract date from filename: votes.old.YYYY-MM-DD.json
+                    date_str = old_file.stem.split('.')[-1]  # Get last part after splitting by '.'
+                    file_date = datetime.strptime(date_str, "%Y-%m-%d")
+                    
+                    if file_date < cutoff_date:
+                        old_file.unlink()
+                        deleted_count += 1
+                        total_deleted += 1
+                        logger.info(f"Deleted old vote backup: {old_file.name} from guild {guild_dir.name}")
+                except (ValueError, IndexError) as e:
+                    logger.warning(f"Could not parse date from filename {old_file.name}: {e}")
+                    continue
+                except Exception as e:
+                    logger.error(f"Error deleting {old_file.name}: {e}", exc_info=True)
         
-        if deleted_count > 0:
-            logger.info(f"Cleanup complete: Deleted {deleted_count} old vote backup file(s)")
+        if total_deleted > 0:
+            logger.info(f"Cleanup complete: Deleted {total_deleted} old vote backup file(s) across all guilds")
         else:
             logger.info("Cleanup complete: No old vote backup files to delete")
     except Exception as e:

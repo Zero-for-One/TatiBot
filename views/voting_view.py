@@ -2,7 +2,8 @@
 import discord
 import asyncio
 import logging
-from data_manager import load_votes, save_votes, get_latest_old_votes
+from data_manager import load_votes, save_votes, find_user_votes_in_old_files
+from translations import get_translation
 
 logger = logging.getLogger(__name__)
 
@@ -78,16 +79,20 @@ def _generate_vote_table_fields(games, user_votes_data):
 class VotingView(discord.ui.View):
     """Interactive voting view with dropdowns for games and ratings."""
     
-    def __init__(self, games, user_votes):
+    def __init__(self, games, user_votes, guild_id, user_id):
         super().__init__(timeout=300)  # 5 minute timeout
         self.games = games
         self.user_votes = user_votes
-        self.user_id = None
+        self.guild_id = guild_id
+        self.user_id = user_id
         self.embed = None  # Will store the embed reference for updates
+        
+        # Get translation function for this user
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
         
         # Add restore previous votes button FIRST (above dropdowns)
         self.restore_button = discord.ui.Button(
-            label="🔄 Restore Last Votes",
+            label=t("vote_restore_button"),
             style=discord.ButtonStyle.secondary
         )
         self.restore_button.callback = self.on_restore_clicked
@@ -96,11 +101,11 @@ class VotingView(discord.ui.View):
         # Create select menu with games (showing ID and name)
         # Note: Discord Select menus preserve selected value - we'll update placeholder to show selection
         self.game_select = discord.ui.Select(
-            placeholder="Choose a game to vote for...",
+            placeholder=t("vote_select_game"),
             options=[
                 discord.SelectOption(
                     label=f"[{game_data.get('id', '?')}] {game_data['name']}",
-                    description=f"Players: {game_data['min_players']}-{game_data['max_players']}",
+                    description=t("vote_players_desc", min=game_data['min_players'], max=game_data['max_players']),
                     value=game_key,
                     emoji=game_data.get("emoji", "🎮")
                 )
@@ -112,13 +117,13 @@ class VotingView(discord.ui.View):
         
         # Create rating select menu (no default value - defaults set dynamically based on selections)
         self.rating_select = discord.ui.Select(
-            placeholder="Choose rating (1-5)...",
+            placeholder=t("vote_rating_placeholder"),
             options=[
-                discord.SelectOption(label="5 - Really want to play ⭐⭐⭐⭐⭐", value="5", emoji="⭐"),
-                discord.SelectOption(label="4 - Want to play ⭐⭐⭐⭐", value="4", emoji="⭐"),
-                discord.SelectOption(label="3 - Neutral ⭐⭐⭐", value="3", emoji="⭐"),
-                discord.SelectOption(label="2 - Don't really want ⭐⭐", value="2", emoji="⭐"),
-                discord.SelectOption(label="1 - Don't want to play ⭐", value="1", emoji="⭐"),
+                discord.SelectOption(label=t("vote_rating_5"), value="5", emoji="⭐"),
+                discord.SelectOption(label=t("vote_rating_4"), value="4", emoji="⭐"),
+                discord.SelectOption(label=t("vote_rating_3"), value="3", emoji="⭐"),
+                discord.SelectOption(label=t("vote_rating_2"), value="2", emoji="⭐"),
+                discord.SelectOption(label=t("vote_rating_1"), value="1", emoji="⭐"),
             ]
         )
         self.rating_select.callback = self.on_rating_selected
@@ -128,22 +133,18 @@ class VotingView(discord.ui.View):
         self.selected_rating = None
     
     async def on_restore_clicked(self, interaction: discord.Interaction):
-        """Restore votes from the last voting period - PERSONAL ONLY (doesn't affect others)."""
-        old_votes = get_latest_old_votes()
+        """Restore votes from the last voting period - PERSONAL ONLY (doesn't affect others).
+        Searches through all old vote files to find user's most recent votes."""
         # Get the current user's ID - this ensures only this user's votes are restored
         user_id = str(interaction.user.id)
+        t = lambda k, **kw: get_translation(k, user_id=user_id, **kw)
         
-        if not old_votes:
-            await interaction.response.send_message(
-                "❌ No previous votes found to restore!",
-                ephemeral=True
-            )
-            return
+        # Search through all old vote files to find this user's votes
+        old_votes, found_file = find_user_votes_in_old_files(user_id, self.guild_id)
         
-        # Check if this specific user had votes in the old file
-        if user_id not in old_votes:
+        if not old_votes or user_id not in old_votes:
             await interaction.response.send_message(
-                "❌ You didn't vote in the previous period, so there's nothing to restore!",
+                t("vote_restore_no_previous"),
                 ephemeral=True
             )
             return
@@ -152,13 +153,13 @@ class VotingView(discord.ui.View):
         old_user_votes = old_votes[user_id].get("votes", {})
         if not old_user_votes:
             await interaction.response.send_message(
-                "❌ You didn't have any votes in the previous period!",
+                t("vote_restore_no_user"),
                 ephemeral=True
             )
             return
         
         # Restore only this user's votes - doesn't touch other users' votes
-        votes = load_votes()
+        votes = load_votes(self.guild_id)
         if user_id not in votes:
             votes[user_id] = {
                 "username": str(interaction.user),
@@ -174,19 +175,27 @@ class VotingView(discord.ui.View):
                 restored_count += 1
         
         votes[user_id]["username"] = str(interaction.user)
-        save_votes(votes)
+        save_votes(votes, self.guild_id)
         self.user_votes[user_id] = votes[user_id]
         
         if restored_count > 0:
-            await interaction.response.send_message(
-                f"✅ Restored {restored_count} of **your** vote(s) from the previous voting period!\n"
-                f"This only affects your votes - others' votes are unchanged.\n"
-                f"You can still modify them using the dropdowns above.",
+            # Extract date from filename for display
+            file_date = found_file.split('.')[-2] if found_file else "previous period"
+            
+            # Update the embed table to show restored votes
+            await interaction.response.defer(ephemeral=True)
+            try:
+                await self._update_embed_table(interaction, user_id)
+            except Exception as e:
+                logger.warning(f"Failed to update embed after restoring votes: {e}")
+            
+            await interaction.followup.send(
+                t("vote_restore_success", count=restored_count, date=file_date),
                 ephemeral=True
             )
         else:
             await interaction.response.send_message(
-                "❌ None of your previous votes match games in the current list!",
+                t("vote_restore_no_match"),
                 ephemeral=True
             )
     
@@ -201,26 +210,36 @@ class VotingView(discord.ui.View):
     
     def _update_select_placeholders(self):
         """Update select menu placeholders to show current selections."""
+        t = lambda k, **kw: get_translation(k, user_id=self.user_id, guild_id=self.guild_id, **kw)
+        
         # Update game select placeholder
-        if self.selected_game:
+        if self.selected_game and self.selected_game in self.games:
             game_data = self.games[self.selected_game]
             game_name = game_data["name"]
             game_id = game_data.get("id", "?")
             emoji = game_data.get("emoji", "🎮")
-            # Truncate if too long
             display_name = f"{emoji} [{game_id}] {game_name}"
-            if len(display_name) > 100:
-                display_name = display_name[:97] + "..."
-            self.game_select.placeholder = f"Selected: {display_name}"
+            if len(display_name) > 75:  # Discord placeholder limit
+                display_name = display_name[:72] + "..."
+            # Check if translation would exceed limit
+            selected_text = t("vote_selected_game", game=display_name)
+            if len(selected_text) > 100:  # Discord placeholder limit
+                self.game_select.placeholder = display_name[:100]
+            else:
+                self.game_select.placeholder = selected_text
         else:
-            self.game_select.placeholder = "Choose a game to vote for..."
+            self.game_select.placeholder = t("vote_select_game")
         
         # Update rating select placeholder
         if self.selected_rating:
             stars = "⭐" * self.selected_rating
-            self.rating_select.placeholder = f"Selected: {self.selected_rating}/5 {stars}"
+            selected_text = t("vote_selected_rating", rating=self.selected_rating, stars=stars)
+            if len(selected_text) > 100:  # Discord placeholder limit
+                self.rating_select.placeholder = f"{self.selected_rating}/5 {stars}"[:100]
+            else:
+                self.rating_select.placeholder = selected_text
         else:
-            self.rating_select.placeholder = "Choose rating (1-5)..."
+            self.rating_select.placeholder = t("vote_rating_placeholder")
     
     async def _update_embed_table(self, interaction: discord.Interaction, user_id: str):
         """Helper method to update the embed table with current votes."""
@@ -229,7 +248,7 @@ class VotingView(discord.ui.View):
         
         try:
             # Load fresh votes to ensure we have the latest data
-            votes = load_votes()
+            votes = load_votes(self.guild_id)
             updated_user_votes = votes.get(user_id, {}).get("votes", {})
             
             # Regenerate table fields with updated votes
@@ -260,7 +279,7 @@ class VotingView(discord.ui.View):
         self.user_id = user_id
         
         # Load votes to check existing rating
-        votes = load_votes()
+        votes = load_votes(self.guild_id)
         existing_rating = None
         
         if user_id in votes:
@@ -294,7 +313,9 @@ class VotingView(discord.ui.View):
             
             votes[user_id]["votes"][game_key] = self.selected_rating
             votes[user_id]["username"] = str(interaction.user)
-            save_votes(votes)
+            # Mark as available when voting (remove unavailable flag)
+            votes[user_id]["unavailable"] = False
+            save_votes(votes, self.guild_id)
             
             # Update local state
             self.user_votes[user_id] = votes[user_id]
@@ -327,8 +348,10 @@ class VotingView(discord.ui.View):
             if self.game_select.values:
                 self.selected_game = self.game_select.values[0]
             else:
+                user_id = str(interaction.user.id)
+                t = lambda k, **kw: get_translation(k, user_id=user_id, **kw)
                 await interaction.response.send_message(
-                    "❌ Please select a game first!",
+                    t("vote_need_game"),
                     ephemeral=True
                 )
                 return
@@ -342,7 +365,7 @@ class VotingView(discord.ui.View):
         self.user_id = user_id
         
         # Save the vote
-        votes = load_votes()
+        votes = load_votes(self.guild_id)
         
         if user_id not in votes:
             votes[user_id] = {
@@ -352,7 +375,9 @@ class VotingView(discord.ui.View):
         
         votes[user_id]["votes"][game_key] = rating
         votes[user_id]["username"] = str(interaction.user)
-        save_votes(votes)
+        # Mark as available when voting (remove unavailable flag)
+        votes[user_id]["unavailable"] = False
+        save_votes(votes, self.guild_id)
         
         # Update local state
         self.user_votes[user_id] = votes[user_id]

@@ -4,6 +4,7 @@ from discord import app_commands
 import logging
 from data_manager import load_games, load_votes
 from views.voting_view import VotingView, _generate_vote_table_fields
+from translations import get_translation
 
 logger = logging.getLogger(__name__)
 
@@ -84,26 +85,29 @@ def setup_voting_commands(bot: discord.ext.commands.Bot):
     @bot.tree.command(name="vote", description="Vote for games using an interactive menu")
     async def vote(interaction: discord.Interaction):
         """Interactive voting interface with dropdown menus."""
-        games = load_games()
+        if not interaction.guild:
+            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            return
+            
+        guild_id = interaction.guild.id
+        user_id = str(interaction.user.id)
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
+        games = load_games(guild_id)
         
         if not games:
             await interaction.response.send_message(
-                "❌ No games in the list yet! Use `/addgame` to add some games first.",
+                t("error_no_games"),
                 ephemeral=True
             )
             return
         
-        votes = load_votes()
-        user_id = str(interaction.user.id)
+        votes = load_votes(guild_id)
         user_votes_data = votes.get(user_id, {}).get("votes", {})
         
         # Create embed with table of games and ratings
         embed = discord.Embed(
-            title="🎮 Game Voting",
-            description="1. Select a game from the dropdown\n"
-                       "2. Select a rating (1-5)\n"
-                       "Vote is automatically saved when both are selected.\n\n"
-                       "Not voting for a game means rating 0 (don't want to play).",
+            title=t("vote_title"),
+            description=t("vote_description"),
             color=discord.Color.blue()
         )
         
@@ -112,7 +116,7 @@ def setup_voting_commands(bot: discord.ext.commands.Bot):
         for field_name, field_value in table_fields:
             embed.add_field(name=field_name, value=field_value, inline=False)
         
-        view = VotingView(games, votes)
+        view = VotingView(games, votes, guild_id, user_id)
         view.embed = embed  # Store embed reference for updates
         
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
@@ -121,22 +125,29 @@ def setup_voting_commands(bot: discord.ext.commands.Bot):
     @bot.tree.command(name="myvotes", description="View your current votes")
     async def myvotes(interaction: discord.Interaction):
         """Show your current votes."""
-        votes = load_votes()
+        if not interaction.guild:
+            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            return
+            
+        guild_id = interaction.guild.id
         user_id = str(interaction.user.id)
-        games = load_games()
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
+        votes = load_votes(guild_id)
+        games = load_games(guild_id)
         
         if not games:
             await interaction.response.send_message(
-                "❌ No games in the list yet!",
+                t("error_no_games"),
                 ephemeral=True
             )
             return
         
         user_votes = votes.get(user_id, {}).get("votes", {}) if user_id in votes else {}
+        is_unavailable = votes.get(user_id, {}).get("unavailable", False) if user_id in votes else False
         
         embed = discord.Embed(
-            title="Your Votes",
-            description="Games you haven't voted for default to rating 0.",
+            title=t("myvotes_title"),
+            description=t("myvotes_description"),
             color=discord.Color.blue()
         )
         
@@ -152,37 +163,112 @@ def setup_voting_commands(bot: discord.ext.commands.Bot):
                 )
             else:
                 vote_list.append(
-                    f"{emoji} **[{game_id}] {game_data['name']}** - 0/5 (not voted)"
+                    f"{emoji} **[{game_id}] {game_data['name']}** - 0/5 {t('myvotes_not_voted')}"
                 )
         
         embed.description = "\n".join(vote_list)
         
         # Show availability status
-        if user_votes:
-            embed.set_footer(text="✅ You are marked as available for game night")
+        if is_unavailable:
+            embed.set_footer(text="❌ You are marked as unavailable (use /available to mark yourself available)")
+        elif user_votes:
+            embed.set_footer(text=t("myvotes_available"))
         else:
-            embed.set_footer(text="❌ You are not marked as available (no votes)")
+            embed.set_footer(text=t("myvotes_unavailable"))
         
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
     
-    @bot.tree.command(name="unavailable", description="Mark yourself as unavailable (removes your votes)")
+    @bot.tree.command(name="unavailable", description="Mark yourself as unavailable (keeps your votes)")
     async def unavailable(interaction: discord.Interaction):
-        """Remove your votes to mark yourself as unavailable."""
-        votes = load_votes()
+        """Mark yourself as unavailable while keeping your votes."""
+        if not interaction.guild:
+            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            return
+            
+        guild_id = interaction.guild.id
         user_id = str(interaction.user.id)
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
+        votes = load_votes(guild_id)
         
         from data_manager import save_votes
         
-        if user_id in votes:
-            del votes[user_id]
-            save_votes(votes)
-            await interaction.response.send_message(
-                "✅ You've been marked as unavailable. Your votes have been removed."
-            )
+        # Initialize user entry if it doesn't exist
+        if user_id not in votes:
+            votes[user_id] = {
+                "username": str(interaction.user),
+                "votes": {},
+                "unavailable": True,
+                "language": "en"
+            }
         else:
+            # Check if already unavailable
+            if votes[user_id].get("unavailable", False):
+                await interaction.response.send_message(
+                    t("unavailable_already"),
+                    ephemeral=True
+                )
+                return
+            
+            # Mark as unavailable but keep votes
+            votes[user_id]["unavailable"] = True
+            votes[user_id]["username"] = str(interaction.user)
+        
+        save_votes(votes, guild_id)
+        
+        logger.info(f"User marked as unavailable: {interaction.user} (ID: {user_id}) in guild {guild_id}")
+        
+        await interaction.response.send_message(
+            t("unavailable_success"),
+            ephemeral=True
+        )
+    
+    @bot.tree.command(name="available", description="Mark yourself as available (restores your votes)")
+    async def available(interaction: discord.Interaction):
+        """Mark yourself as available again."""
+        if not interaction.guild:
+            await interaction.response.send_message("❌ This command can only be used in a server!", ephemeral=True)
+            return
+            
+        guild_id = interaction.guild.id
+        user_id = str(interaction.user.id)
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
+        votes = load_votes(guild_id)
+        
+        from data_manager import save_votes
+        
+        # Initialize user entry if it doesn't exist
+        if user_id not in votes:
+            votes[user_id] = {
+                "username": str(interaction.user),
+                "votes": {},
+                "unavailable": False,
+                "language": "en"
+            }
+            save_votes(votes, guild_id)
             await interaction.response.send_message(
-                "ℹ️ You weren't marked as available (no votes to remove).",
+                t("available_no_votes"),
                 ephemeral=True
             )
+            return
+        
+        # Check if already available
+        if not votes[user_id].get("unavailable", False):
+            await interaction.response.send_message(
+                t("available_already"),
+                ephemeral=True
+            )
+            return
+        
+        # Mark as available (votes are already preserved)
+        votes[user_id]["unavailable"] = False
+        votes[user_id]["username"] = str(interaction.user)
+        save_votes(votes, guild_id)
+        
+        logger.info(f"User marked as available: {interaction.user} (ID: {user_id}) in guild {guild_id}")
+        
+        await interaction.response.send_message(
+            t("available_success"),
+            ephemeral=True
+        )
 

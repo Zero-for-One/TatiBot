@@ -2,7 +2,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from config import DATA_DIR, GAMES_FILE, VOTES_FILE
+from config import get_games_file, get_votes_file, get_guild_dir
 
 
 def get_next_game_id(games):
@@ -16,10 +16,18 @@ def get_next_game_id(games):
     return max(existing_ids) + 1
 
 
-def load_games():
-    """Load games from JSON file."""
-    if GAMES_FILE.exists():
-        with open(GAMES_FILE, 'r', encoding='utf-8') as f:
+def load_games(guild_id: int):
+    """Load games from JSON file for a specific guild.
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        Dictionary of games
+    """
+    games_file = get_games_file(guild_id)
+    if games_file.exists():
+        with open(games_file, 'r', encoding='utf-8') as f:
             games = json.load(f)
             # Ensure all games have IDs (backward compatibility)
             needs_save = False
@@ -29,39 +37,67 @@ def load_games():
                     game_data["id"] = get_next_game_id(games)
                     needs_save = True
             if needs_save:
-                save_games(games)
+                save_games(games, guild_id)
             return games
     return {}
 
 
-def save_games(games):
-    """Save games to JSON file."""
-    with open(GAMES_FILE, 'w', encoding='utf-8') as f:
+def save_games(games, guild_id: int):
+    """Save games to JSON file for a specific guild.
+    
+    Args:
+        games: Dictionary of games to save
+        guild_id: The Discord guild (server) ID
+    """
+    games_file = get_games_file(guild_id)
+    with open(games_file, 'w', encoding='utf-8') as f:
         json.dump(games, f, indent=2, ensure_ascii=False)
 
 
-def load_votes():
-    """Load votes from JSON file."""
-    if VOTES_FILE.exists():
-        with open(VOTES_FILE, 'r', encoding='utf-8') as f:
+def load_votes(guild_id: int):
+    """Load votes from JSON file for a specific guild.
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        Dictionary of votes
+    """
+    votes_file = get_votes_file(guild_id)
+    if votes_file.exists():
+        with open(votes_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     return {}
 
 
-def save_votes(votes):
-    """Save votes to JSON file."""
-    with open(VOTES_FILE, 'w', encoding='utf-8') as f:
+def save_votes(votes, guild_id: int):
+    """Save votes to JSON file for a specific guild.
+    
+    Args:
+        votes: Dictionary of votes to save
+        guild_id: The Discord guild (server) ID
+    """
+    votes_file = get_votes_file(guild_id)
+    with open(votes_file, 'w', encoding='utf-8') as f:
         json.dump(votes, f, indent=2, ensure_ascii=False)
 
 
-def save_old_votes():
-    """Save current votes to a dated backup file."""
-    votes = load_votes()
+def save_old_votes(guild_id: int):
+    """Save current votes to a dated backup file for a specific guild.
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        Path to the backup file, or None if no votes to save
+    """
+    votes = load_votes(guild_id)
     if not votes:
         return None
     
     date_str = datetime.now().strftime("%Y-%m-%d")
-    old_votes_file = DATA_DIR / f"votes.old.{date_str}.json"
+    guild_dir = get_guild_dir(guild_id)
+    old_votes_file = guild_dir / f"votes.old.{date_str}.json"
     
     with open(old_votes_file, 'w', encoding='utf-8') as f:
         json.dump(votes, f, indent=2, ensure_ascii=False)
@@ -69,21 +105,98 @@ def save_old_votes():
     return str(old_votes_file)
 
 
-def get_latest_old_votes():
-    """Get the most recent old votes file."""
-    old_files = list(DATA_DIR.glob("votes.old.*.json"))
-    if not old_files:
-        return None
+def find_user_votes_in_old_files(user_id: str, guild_id: int):
+    """Search through all old vote files to find user's votes, starting from most recent.
     
-    # Sort by filename (which includes date) and get the latest
-    latest_file = sorted(old_files, reverse=True)[0]
-    with open(latest_file, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    Args:
+        user_id: The user's ID as a string
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        Tuple of (votes_dict, filename) if found, (None, None) otherwise
+    """
+    guild_dir = get_guild_dir(guild_id)
+    old_files = list(guild_dir.glob("votes.old.*.json"))
+    if not old_files:
+        return None, None
+    
+    # Sort by filename (which includes date) - newest first
+    sorted_files = sorted(old_files, reverse=True)
+    
+    # Search through each file from newest to oldest
+    for old_file in sorted_files:
+        try:
+            with open(old_file, 'r', encoding='utf-8') as f:
+                old_votes = json.load(f)
+                
+            # Check if this user has votes in this file
+            if user_id in old_votes:
+                user_data = old_votes[user_id]
+                user_votes = user_data.get("votes", {})
+                # Only return if they actually have votes
+                if user_votes:
+                    return old_votes, str(old_file)
+        except (json.JSONDecodeError, IOError) as e:
+            # Skip corrupted or unreadable files
+            continue
+    
+    # No votes found in any old file
+    return None, None
 
 
-def clear_votes(save_backup=True):
-    """Clear all votes (used when starting a new voting period)."""
+def clear_votes(guild_id: int, save_backup=True):
+    """Clear all votes for a specific guild (used when starting a new voting period).
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        save_backup: Whether to save a backup before clearing
+    """
     if save_backup:
-        save_old_votes()
-    save_votes({})
+        save_old_votes(guild_id)
+    save_votes({}, guild_id)
+
+
+def get_user_language(user_id: str, guild_id: int) -> str:
+    """Get user's preferred language from votes data for a specific guild.
+    
+    Args:
+        user_id: The user's ID as a string
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        Language code ('en' or 'fr'), defaults to 'en'
+    """
+    votes = load_votes(guild_id)
+    user_data = votes.get(str(user_id), {})
+    return user_data.get("language", "en")
+
+
+def set_user_language(user_id: str, lang: str, guild_id: int) -> bool:
+    """Set user's preferred language in votes data for a specific guild.
+    
+    Args:
+        user_id: The user's ID as a string
+        lang: Language code ('en' or 'fr')
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        True if language is valid and set, False otherwise
+    """
+    if lang not in ["en", "fr"]:
+        return False
+    
+    votes = load_votes(guild_id)
+    user_id_str = str(user_id)
+    
+    if user_id_str not in votes:
+        votes[user_id_str] = {
+            "username": "",
+            "votes": {},
+            "language": lang
+        }
+    else:
+        votes[user_id_str]["language"] = lang
+    
+    save_votes(votes, guild_id)
+    return True
 

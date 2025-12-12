@@ -2,22 +2,26 @@
 import discord
 import logging
 from data_manager import load_games, save_games
+from translations import get_translation
 
 logger = logging.getLogger(__name__)
 
 
-class UpdateGameModal(discord.ui.Modal, title="Update Game"):
+class UpdateGameModal(discord.ui.Modal):
     """Modal for updating game properties."""
     
-    def __init__(self, game_key, game_data):
-        super().__init__()
+    def __init__(self, game_key, game_data, guild_id, user_id):
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
+        super().__init__(title=t("game_update_modal_title"))
         self.game_key = game_key
         self.game_data = game_data
+        self.guild_id = guild_id
+        self.user_id = user_id
         
         # Pre-fill with current values
         self.name_input = discord.ui.TextInput(
-            label="Game Name",
-            placeholder="Enter new name (or keep current)",
+            label=t("game_update_name_label"),
+            placeholder=t("game_update_name_placeholder"),
             default=game_data["name"],
             max_length=100,
             required=False
@@ -25,8 +29,8 @@ class UpdateGameModal(discord.ui.Modal, title="Update Game"):
         self.add_item(self.name_input)
         
         self.min_players_input = discord.ui.TextInput(
-            label="Min Players",
-            placeholder="Minimum number of players",
+            label=t("game_update_min_label"),
+            placeholder=t("game_update_min_placeholder"),
             default=str(game_data["min_players"]),
             max_length=3,
             required=False
@@ -34,8 +38,8 @@ class UpdateGameModal(discord.ui.Modal, title="Update Game"):
         self.add_item(self.min_players_input)
         
         self.max_players_input = discord.ui.TextInput(
-            label="Max Players",
-            placeholder="Maximum number of players",
+            label=t("game_update_max_label"),
+            placeholder=t("game_update_max_placeholder"),
             default=str(game_data["max_players"]),
             max_length=3,
             required=False
@@ -43,8 +47,8 @@ class UpdateGameModal(discord.ui.Modal, title="Update Game"):
         self.add_item(self.max_players_input)
         
         self.emoji_input = discord.ui.TextInput(
-            label="Emoji",
-            placeholder="Emoji/emote for the game",
+            label=t("game_update_emoji_label"),
+            placeholder=t("game_update_emoji_placeholder"),
             default=game_data.get("emoji", "🎮"),
             max_length=10,
             required=False
@@ -53,7 +57,7 @@ class UpdateGameModal(discord.ui.Modal, title="Update Game"):
     
     async def on_submit(self, interaction: discord.Interaction):
         """Handle modal submission."""
-        games = load_games()
+        games = load_games(self.guild_id)
         game = games[self.game_key]
         changes = []
         
@@ -140,9 +144,9 @@ class UpdateGameModal(discord.ui.Modal, title="Update Game"):
             )
             return
         
-        save_games(games)
+        save_games(games, self.guild_id)
         
-        logger.info(f"Game updated: '{game['name']}' by {interaction.user} (ID: {interaction.user.id}) - Changes: {', '.join(changes)}")
+        logger.info(f"Game updated: '{game['name']}' by {interaction.user} (ID: {interaction.user.id}) in guild {self.guild_id} - Changes: {', '.join(changes)}")
         
         game_emoji = game.get("emoji", "🎮")
         response = f"✅ Updated {game_emoji} **{game['name']}**\n"
@@ -154,17 +158,21 @@ class UpdateGameModal(discord.ui.Modal, title="Update Game"):
 class UpdateGameView(discord.ui.View):
     """View for selecting a game to update."""
     
-    def __init__(self, games):
+    def __init__(self, games, guild_id, user_id):
         super().__init__(timeout=300)
         self.games = games
+        self.guild_id = guild_id
+        self.user_id = user_id
+        
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
         
         # Create select menu with games (showing ID and name)
         self.game_select = discord.ui.Select(
-            placeholder="Choose a game to update...",
+            placeholder=t("game_update_select"),
             options=[
                 discord.SelectOption(
                     label=f"[{game_data.get('id', '?')}] {game_data['name']}",
-                    description=f"Players: {game_data['min_players']}-{game_data['max_players']}",
+                    description=t("vote_players_desc", min=game_data['min_players'], max=game_data['max_players']),
                     value=game_key,
                     emoji=game_data.get("emoji", "🎮")
                 )
@@ -179,6 +187,7 @@ class UpdateGameView(discord.ui.View):
         game_key = self.game_select.values[0]
         game_data = self.games[game_key]
         
-        modal = UpdateGameModal(game_key, game_data)
+        user_id = str(interaction.user.id)
+        modal = UpdateGameModal(game_key, game_data, self.guild_id, user_id)
         await interaction.response.send_modal(modal)
 
