@@ -189,16 +189,38 @@ class VotingView(discord.ui.View):
         self.restore_button.callback = self.on_restore_clicked
         self.add_item(self.restore_button)
         
-        # Create select menus with games (Discord limit: 25 options per menu)
+        # Create select menus with games (Discord limits: 25 options per menu, 5 action rows per message)
         # Split games into chunks of 25
         sorted_games = sorted(games.items(), key=lambda x: (x[1].get("id", 9999), x[1]["name"]))
         MAX_OPTIONS_PER_MENU = 25
+        MAX_ACTION_ROWS = 5  # Discord limit: 5 action rows per message
+        
+        # Calculate chunks
         game_chunks = [sorted_games[i:i + MAX_OPTIONS_PER_MENU] for i in range(0, len(sorted_games), MAX_OPTIONS_PER_MENU)]
+        
+        # Filter out empty chunks (shouldn't happen, but safety check)
+        game_chunks = [chunk for chunk in game_chunks if chunk]
+        
+        # Limit to MAX_ACTION_ROWS - 1 (reserve 1 for the restore button)
+        # If we have more chunks than allowed, we'll only show the first N chunks
+        max_chunks = MAX_ACTION_ROWS - 1
+        if len(game_chunks) > max_chunks:
+            logger.warning(f"Too many games ({len(sorted_games)}) for voting view. Showing first {max_chunks * MAX_OPTIONS_PER_MENU} games.")
+            game_chunks = game_chunks[:max_chunks]
+        
+        logger.debug(f"Creating {len(game_chunks)} select menus for {len(sorted_games)} games. Chunk sizes: {[len(c) for c in game_chunks]}")
         
         # Store select menus for callback handling
         self.game_selects = []
         
         for chunk_idx, chunk in enumerate(game_chunks):
+            # Skip empty chunks
+            if not chunk:
+                continue
+            
+            # Ensure chunk doesn't exceed limit (safety check)
+            chunk = chunk[:MAX_OPTIONS_PER_MENU]
+            
             # Create placeholder text
             if len(game_chunks) > 1:
                 start_id = chunk[0][1].get("id", 1)
@@ -207,17 +229,27 @@ class VotingView(discord.ui.View):
             else:
                 placeholder = t("vote_select_game")
             
-            game_select = discord.ui.Select(
-                placeholder=placeholder,
-                options=[
+            # Create options list
+            options = []
+            for game_key, game_data in chunk:
+                options.append(
                     discord.SelectOption(
                         label=f"[{game_data.get('id', '?')}] {game_data['name']}",
                         description=t("vote_players_desc", min=game_data['min_players'], max=game_data['max_players']),
                         value=game_key,
                         emoji=game_data.get("emoji", "🎮")
                     )
-                    for game_key, game_data in chunk
-                ]
+                )
+            
+            # Safety check: ensure we have at least 1 option and at most 25
+            if not options:
+                continue
+            if len(options) > MAX_OPTIONS_PER_MENU:
+                options = options[:MAX_OPTIONS_PER_MENU]
+            
+            game_select = discord.ui.Select(
+                placeholder=placeholder,
+                options=options
             )
             # Create a callback that captures this specific select
             def make_callback(select_menu):
