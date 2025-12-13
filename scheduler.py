@@ -4,44 +4,63 @@ import logging
 from pathlib import Path
 from datetime import datetime, timedelta
 from apscheduler.triggers.cron import CronTrigger
-from data_manager import save_old_votes, clear_votes
+from data_manager import save_old_votes, clear_votes, load_server_config
 from config import GUILDS_DIR
 
 logger = logging.getLogger(__name__)
 
 
-async def send_sunday_reminder(bot):
-    """Send reminder message to vote on all servers the bot is in."""
-    logger.info("Sunday reminder triggered - sending vote reminders")
-    embed = discord.Embed(
-        title="🎮 Game Night Reminder!",
-        description="It's time to vote for next week's game! Use `/vote` to rate games and show your availability.",
-        color=discord.Color.blue()
-    )
-    embed.add_field(
-        name="How it works",
-        value="1. Use `/vote` to open the interactive voting menu\n"
-              "2. Select games and rate them (default is 5)\n"
-              "3. Not voting for a game = rating 0\n"
-              "4. Voting shows you're available for game night\n"
-              "5. Use `/results` to see which game won!",
-        inline=False
-    )
+async def send_reminders(bot):
+    """Check each server's reminder schedule and send reminders if it's time."""
+    now = datetime.now()
+    current_day = now.strftime("%a").lower()[:3]  # mon, tue, wed, etc.
+    current_hour = now.hour
+    current_minute = now.minute
+    
+    logger.info(f"Checking reminder schedules (current: {current_day} {current_hour:02d}:{current_minute:02d})")
     
     for guild in bot.guilds:
-        # Try to find a general channel or first text channel
-        channel = None
-        for ch in guild.text_channels:
-            if 'general' in ch.name.lower() or ch.permissions_for(guild.me).send_messages:
-                channel = ch
-                break
-        
-        if channel:
-            try:
-                await channel.send(embed=embed)
-                logger.info(f"Sunday reminder sent to {guild.name} (ID: {guild.id}) in channel {channel.name}")
-            except Exception as e:
-                logger.error(f"Failed to send reminder to {guild.name}: {e}", exc_info=True)
+        try:
+            config = load_server_config(guild.id)
+            reminder_day = config.get("reminder_day", "sun")
+            reminder_hour = config.get("reminder_hour", 20)
+            reminder_minute = config.get("reminder_minute", 0)
+            
+            # Check if it's time to send reminder for this server
+            if (current_day == reminder_day and 
+                current_hour == reminder_hour and 
+                current_minute == reminder_minute):
+                
+                embed = discord.Embed(
+                    title="🎮 Game Night Reminder!",
+                    description="It's time to vote for next week's game! Use `/vote` to rate games and show your availability.",
+                    color=discord.Color.blue()
+                )
+                embed.add_field(
+                    name="How it works",
+                    value="1. Use `/vote` to open the interactive voting menu\n"
+                          "2. Select games from dropdown and rate them (default is 5)\n"
+                          "3. Not voting for a game = rating 0\n"
+                          "4. Voting shows you're available for game night\n"
+                          "5. Use `/results` to see which game won!",
+                    inline=False
+                )
+                
+                # Try to find a general channel or first text channel
+                channel = None
+                for ch in guild.text_channels:
+                    if 'general' in ch.name.lower() or ch.permissions_for(guild.me).send_messages:
+                        channel = ch
+                        break
+                
+                if channel:
+                    try:
+                        await channel.send(embed=embed)
+                        logger.info(f"Reminder sent to {guild.name} (ID: {guild.id}) in channel {channel.name}")
+                    except Exception as e:
+                        logger.error(f"Failed to send reminder to {guild.name}: {e}", exc_info=True)
+        except Exception as e:
+            logger.error(f"Error checking reminder schedule for guild {guild.id}: {e}", exc_info=True)
 
 
 async def reset_votes_wednesday(bot):
@@ -156,14 +175,14 @@ async def clean_old_logs(bot):
 
 def setup_scheduler(scheduler, bot):
     """Set up scheduled tasks."""
-    # Schedule Sunday reminder at 8 PM (20:00)
+    # Schedule reminder check every minute (checks each server's individual schedule)
     scheduler.add_job(
-        send_sunday_reminder,
-        CronTrigger(day_of_week='sun', hour=20, minute=0),
+        send_reminders,
+        CronTrigger(minute='*'),  # Every minute
         args=[bot],
-        id='sunday_reminder'
+        id='reminder_check'
     )
-    logger.info("Scheduled Sunday reminder for 8 PM")
+    logger.info("Scheduled reminder check (runs every minute, checks per-server schedules)")
     
     # Schedule Wednesday vote reset at 11:59 PM (23:59)
     scheduler.add_job(

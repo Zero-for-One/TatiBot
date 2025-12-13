@@ -9,7 +9,11 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from logger_config import setup_logging
 from scheduler import setup_scheduler
-from commands import game_commands, voting_commands, utility_commands
+from commands import (
+    game_crud, game_config, voting_commands, 
+    results_commands, admin_commands, user_commands,
+    schedule_commands, config_commands
+)
 
 # Set up logging
 logger = setup_logging()
@@ -88,9 +92,14 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
             pass
 
 # Register all command groups
-game_commands.setup_game_commands(bot)
+game_crud.setup_game_crud_commands(bot)
+game_config.setup_game_config_commands(bot)
 voting_commands.setup_voting_commands(bot)
-utility_commands.setup_utility_commands(bot)
+results_commands.setup_results_commands(bot)
+admin_commands.setup_admin_commands(bot)
+user_commands.setup_user_commands(bot)
+schedule_commands.setup_schedule_commands(bot)
+config_commands.setup_config_commands(bot)
 
 
 # Run the bot

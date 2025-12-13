@@ -26,3 +26,13 @@ def get_votes_file(guild_id: int) -> Path:
     """Get the votes file path for a specific guild."""
     return get_guild_dir(guild_id) / "votes.json"
 
+
+def get_config_file(guild_id: int) -> Path:
+    """Get the server config file path for a specific guild."""
+    return get_guild_dir(guild_id) / "config.json"
+
+
+def get_schedules_file(guild_id: int) -> Path:
+    """Get the scheduled game nights file path for a specific guild."""
+    return get_guild_dir(guild_id) / "schedules.json"
+

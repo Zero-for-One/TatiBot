@@ -4,14 +4,17 @@ A Discord bot to help organize game nights by allowing friends to vote on games 
 
 ## Features
 
-- 🎮 **Game Management**: Add, remove, and update games with player count requirements and custom emojis
+- 🎮 **Game Management**: Add, remove, and update games with player count requirements, custom emojis, and store links
+- 🔐 **Role-Based Permissions**: Configure which roles can manage games (admins can always manage)
 - ⭐ **Interactive Voting System**: Rate games from 1-5 using dropdown menus with live table updates
 - 👥 **Availability Tracking**: Mark yourself available/unavailable while preserving your votes
-- 📊 **Smart Results**: Shows top 5 compatible games based on votes and player count
-- ⏰ **Automatic Reminders**: Sends reminders every Sunday at 8 PM to vote
+- 📊 **Smart Results**: Shows all compatible games with pagination, sorted by votes and player count
+- 📅 **Game Night Scheduling**: Schedule specific game nights with date/time and configure recurring schedules
+- ⏰ **Customizable Reminders**: Configure per-server reminder schedules (default: Sunday 8 PM)
 - 🔄 **Auto Reset**: Automatically resets votes every Wednesday at 11:59 PM with backup
 - 💾 **Vote Restoration**: Restore your personal votes from the previous voting period
 - 🗂️ **Game IDs**: Easy game management with unique IDs for each game
+- 🔗 **Store Links**: Add Steam, Epic, or other store links to games
 - 🌐 **Multi-Language Support**: Choose between English and Français (French)
 - 🏢 **Per-Server Data**: Each Discord server has its own separate game list and votes
 - 📝 **Logging**: Daily log files created at midnight for tracking bot activity
@@ -63,26 +66,37 @@ The bot should now be online in your Discord server!
 
 ### Game Management
 
-- `/addgame <name> [min_players] [max_players] [emoji]` - Add a new game to the list
-  - `min_players`: Minimum players (default: 1)
-  - `max_players`: Maximum players (default: 10)
-  - `emoji`: Custom emoji for the game (default: 🎮)
+- `/addgame` - Add a new game to the list using a form
+  - Opens an interactive form to enter game details
+  - Game name is required
+  - `min_players`: Minimum players (default: 1, optional)
+  - `max_players`: Maximum players (default: 10, optional)
+  - `emoji`: Custom emoji for the game (default: 🎮, optional)
+  - `store_links`: Optional store links (e.g., "Steam: https://..., Epic: https://...")
   - Each game gets a unique ID automatically
-  - Example: `/addgame "Among Us" min_players:4 max_players:10 emoji:👻`
+  - Requires game management permission (admin or configured roles)
 
-- `/removegame <game>` - Remove a game by ID or name
-  - You can use the game's ID (number) or its name
-  - Example: `/removegame 5` or `/removegame "Among Us"`
+- `/removegame` - Remove a game using a dropdown
+  - Opens an interactive dropdown to select the game to remove
+  - Requires game management permission (admin or configured roles)
 
-- `/listgames` - Show all available games with IDs and player requirements
+- `/listgames` - Show all available games with IDs, player requirements, and store links
 
 - `/updategame` - Update a game's properties (interactive menu)
   - Opens a dropdown to select a game
-  - Allows updating name, min/max players, and emoji via modal
+  - Allows updating name, min/max players, emoji, and store links via modal
+  - Requires game management permission (admin or configured roles)
 
 - `/setgameemoji <game> <emoji>` - Change the emoji for a game
   - Can use game ID or name
   - Example: `/setgameemoji game:5 emoji:🎮`
+  - Requires game management permission (admin or configured roles)
+
+- `/setgameroles <roles>` - Configure which roles can manage games (admin only)
+  - Set roles that can add/remove/update games
+  - Accepts role mentions (`@Role`) or role names (comma-separated)
+  - Leave empty to allow only admins
+  - Example: `/setgameroles @GameMaster @Moderator`
 
 ### Voting
 
@@ -110,12 +124,13 @@ The bot should now be online in your Discord server!
 
 ### Results & Utilities
 
-- `/results` - Show voting results and top 5 recommended games
-  - Shows compatible games based on number of available players
-  - Displays top 5 games sorted by score
+- `/results` - Show voting results and recommended games
+  - Shows all compatible games based on number of available players
+  - Displays games sorted by score with pagination (if more than 10 games)
+  - Shows store links for each game
   - Lists all voters (people who are available)
 
-- `/clearvotes` - Manually clear all votes (admin recommended)
+- `/clearvotes` - Manually clear all votes
   - Saves a backup before clearing
   - Use for emergency resets or manual testing
 
@@ -127,6 +142,33 @@ The bot should now be online in your Discord server!
 - `/sync` - Force sync commands to server (admin only)
   - Use this if commands aren't appearing after updates
   - Provides instant command updates without waiting
+
+### Scheduling
+
+- `/schedule <date> <time> [description]` - Schedule a game night
+  - Date format: `YYYY-MM-DD` (e.g., 2024-12-25)
+  - Time format: `HH:MM` 24-hour (e.g., 20:00 for 8 PM)
+  - Optional description for the game night
+  - Example: `/schedule date:2024-12-25 time:20:00 description:Christmas Game Night`
+
+- `/schedules` - List all upcoming scheduled game nights
+  - Shows the next 10 upcoming game nights with date, time, and description
+
+- `/configreminder <day> <hour> <minute>` - Configure voting reminder schedule (admin only)
+  - Set when reminders are sent per server
+  - Day: Monday-Sunday
+  - Hour: 0-23 (24-hour format)
+  - Minute: 0-59
+  - Default: Sunday at 20:00 (8 PM)
+  - Example: `/configreminder day:Friday hour:18 minute:0`
+
+- `/configgamenight <day> <hour> <minute>` - Configure recurring game night schedule (admin only)
+  - Set a recurring game night schedule
+  - Use "None" to disable
+  - Example: `/configgamenight day:Friday hour:20 minute:0`
+
+- `/config` - View current server configuration
+  - Shows reminder schedule and game night schedule
 
 ## How It Works
 
@@ -141,10 +183,16 @@ The bot should now be online in your Discord server!
    - Voting automatically marks you as available
    - Use `/unavailable` to mark yourself unavailable (votes are preserved)
    - Use `/available` to mark yourself available again (votes are restored)
-5. **Results**: Use `/results` to see the top 5 compatible games based on votes and player count
+5. **Results**: Use `/results` to see all compatible games based on votes and player count
+   - Shows all games with pagination (if more than 10 games)
    - Only counts available players (not marked as unavailable)
-6. **Automatic Workflow**:
-   - **Sunday 8 PM**: Bot sends reminder to vote
+   - Displays store links for each game
+6. **Scheduling** (optional):
+   - Use `/schedule` to schedule specific game nights
+   - Use `/configreminder` to customize when reminders are sent
+   - Use `/configgamenight` to set recurring game night schedules
+7. **Automatic Workflow**:
+   - **Reminder**: Bot sends reminder to vote (configurable per server, default: Sunday 8 PM)
    - **Wednesday 11:59 PM**: Bot automatically resets all votes and saves backup
    - **Daily 2 AM**: Bot cleans up old vote backups (30+ days) and log files (7+ days)
 
@@ -157,11 +205,18 @@ TatiBot/
 ├── data_manager.py        # Data loading/saving functions
 ├── logger_config.py       # Logging configuration
 ├── scheduler.py           # Scheduled tasks (reminders, resets, cleanup)
-├── translations.py         # Translation strings (English/French)
+├── translations.py        # Translation strings (English/French)
+├── helpers.py             # Common helper functions
+├── permissions.py         # Permission checking utilities
 ├── commands/              # Command modules
-│   ├── game_commands.py   # Game management commands
+│   ├── game_crud.py       # Game CRUD commands (add, remove, update, list)
+│   ├── game_config.py    # Game configuration (emoji, roles)
 │   ├── voting_commands.py # Voting commands
-│   └── utility_commands.py # Results, clear, sync, language, help
+│   ├── results_commands.py # Results command
+│   ├── admin_commands.py # Admin commands (clear, sync)
+│   ├── user_commands.py   # User commands (language, help)
+│   ├── schedule_commands.py # Schedule commands
+│   └── config_commands.py # Configuration commands
 ├── views/                 # Discord UI components
 │   ├── voting_view.py     # Interactive voting interface
 │   └── game_update.py     # Game update interface
@@ -170,6 +225,8 @@ TatiBot/
 │       └── {guild_id}/    # Server-specific data
 │           ├── games.json      # Games list for this server
 │           ├── votes.json      # Current votes for this server
+│           ├── config.json     # Server configuration (reminders, roles)
+│           ├── schedules.json  # Scheduled game nights
 │           └── votes.old.*.json # Vote backups (auto-created)
 └── logs/                  # Log files
     └── bot_YYYY-MM-DD.log # Daily log files (created at midnight)
@@ -179,8 +236,10 @@ TatiBot/
 
 The bot stores data per-server in the `data/guilds/` directory:
 - Each Discord server gets its own folder: `data/guilds/{server_id}/`
-- `games.json` - List of all games with IDs, names, player counts, and emojis (per server)
+- `games.json` - List of all games with IDs, names, player counts, emojis, and store links (per server)
 - `votes.json` - Current votes, availability status, and language preferences (per server)
+- `config.json` - Server configuration (reminder schedule, game night schedule, game management roles)
+- `schedules.json` - Scheduled game nights with dates and descriptions
 - `votes.old.YYYY-MM-DD.json` - Automatic vote backups when votes are reset (per server)
 
 **Important**: Each server has completely separate game lists and votes. Users on different servers cannot see each other's games or votes.
@@ -192,8 +251,10 @@ Log files are stored in the `logs/` directory:
 ## Example Workflow
 
 1. **Setup** (one-time): Admin adds games:
-   - `/addgame name:"Among Us" min_players:4 max_players:10 emoji:👻`
+   - `/addgame name:"Among Us" min_players:4 max_players:10 emoji:👻 store_links:"Steam: https://store.steampowered.com/app/945360"`
    - `/addgame name:"Astroneer" min_players:1 max_players:4 emoji:🚀`
+   - Optionally configure game management roles: `/setgameroles @GameMaster`
+   - Optionally configure reminder schedule: `/configreminder day:Friday hour:18 minute:0`
 
 2. **Weekly Voting** (Sunday reminder or anytime):
    - Players use `/vote` to open the interactive interface
@@ -203,8 +264,9 @@ Log files are stored in the `logs/` directory:
 
 3. **Game Night**: Someone runs `/results`
    - Bot shows: "5 players available"
-   - Top 5 compatible games listed by score
+   - All compatible games listed by score (with pagination if more than 10)
    - Recommended game highlighted
+   - Store links displayed for each game
 
 4. **Automatic Reset**: Wednesday at 11:59 PM
    - Bot saves current votes to `votes.old.YYYY-MM-DD.json`
@@ -228,7 +290,9 @@ Log files are stored in the `logs/` directory:
   - Use `/sync` command (admin only) for instant updates
   - If still not working, check that the bot has `applications.commands` scope
 
-- **Sunday reminder not working**:
+- **Reminder not working**:
+  - Check your server's reminder schedule with `/config`
+  - Reminder schedule is configurable per server (default: Sunday 8 PM)
   - Make sure the bot is running continuously
   - Check logs for scheduler activity
   - Consider using a hosting service for 24/7 uptime
@@ -248,6 +312,16 @@ Log files are stored in the `logs/` directory:
 - **Continuous Running**: The bot needs to be running 24/7 for scheduled tasks (reminders, resets, cleanup) to work
 - **Hosting**: Consider hosting on a cloud service (Heroku, Railway, VPS, etc.) for reliable uptime
 - **Game IDs**: Games are automatically assigned unique IDs when added - use these for easier management
+- **Store Links**: Add Steam, Epic, or other store links when creating/updating games - displayed in `/listgames` and `/results`
+- **Role-Based Permissions**: 
+  - Admins can always manage games
+  - Use `/setgameroles` to allow specific roles to manage games
+  - If no roles configured, only admins can manage games
+- **Scheduling**:
+  - Use `/schedule` to schedule specific game nights
+  - Use `/configreminder` to customize reminder schedule per server
+  - Use `/configgamenight` to set recurring game night schedules
+  - Use `/config` to view current server configuration
 - **Vote Defaults**: 
   - Default rating is 5 (if not specified when voting)
   - Games not voted on default to rating 0

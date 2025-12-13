@@ -2,7 +2,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from config import get_games_file, get_votes_file, get_guild_dir
+from config import get_games_file, get_votes_file, get_guild_dir, get_config_file, get_schedules_file
 
 
 def get_next_game_id(games):
@@ -199,4 +199,128 @@ def set_user_language(user_id: str, lang: str, guild_id: int) -> bool:
     
     save_votes(votes, guild_id)
     return True
+
+
+def load_server_config(guild_id: int):
+    """Load server configuration from JSON file for a specific guild.
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        Dictionary with server configuration (reminder_day, reminder_hour, reminder_minute, etc.)
+    """
+    config_file = get_config_file(guild_id)
+    if config_file.exists():
+        with open(config_file, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+            # Ensure game_management_roles exists (backward compatibility)
+            if "game_management_roles" not in config:
+                config["game_management_roles"] = []
+            return config
+    # Default configuration
+    return {
+        "reminder_day": "sun",  # Sunday
+        "reminder_hour": 20,     # 8 PM
+        "reminder_minute": 0,
+        "game_night_day": None,  # None means no recurring game night
+        "game_night_hour": None,
+        "game_night_minute": None,
+        "game_management_roles": []  # Empty list means only admins can manage games
+    }
+
+
+def save_server_config(config: dict, guild_id: int):
+    """Save server configuration to JSON file for a specific guild.
+    
+    Args:
+        config: Dictionary with server configuration
+        guild_id: The Discord guild (server) ID
+    """
+    config_file = get_config_file(guild_id)
+    with open(config_file, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+
+
+def load_schedules(guild_id: int):
+    """Load scheduled game nights from JSON file for a specific guild.
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        
+    Returns:
+        List of scheduled game nights (each with id, datetime, description, etc.)
+    """
+    schedules_file = get_schedules_file(guild_id)
+    if schedules_file.exists():
+        with open(schedules_file, 'r', encoding='utf-8') as f:
+            schedules = json.load(f)
+            # Ensure it's a list
+            if isinstance(schedules, list):
+                return schedules
+            return []
+    return []
+
+
+def save_schedules(schedules: list, guild_id: int):
+    """Save scheduled game nights to JSON file for a specific guild.
+    
+    Args:
+        schedules: List of scheduled game nights
+        guild_id: The Discord guild (server) ID
+    """
+    schedules_file = get_schedules_file(guild_id)
+    with open(schedules_file, 'w', encoding='utf-8') as f:
+        json.dump(schedules, f, indent=2, ensure_ascii=False)
+
+
+def add_schedule(guild_id: int, schedule_datetime: datetime, description: str = None):
+    """Add a new scheduled game night.
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        schedule_datetime: datetime object for when the game night is scheduled
+        description: Optional description for the game night
+        
+    Returns:
+        The ID of the newly created schedule
+    """
+    schedules = load_schedules(guild_id)
+    
+    # Generate ID (use timestamp as ID for uniqueness)
+    schedule_id = int(schedule_datetime.timestamp())
+    
+    new_schedule = {
+        "id": schedule_id,
+        "datetime": schedule_datetime.isoformat(),
+        "description": description or "",
+        "created_at": datetime.now().isoformat()
+    }
+    
+    schedules.append(new_schedule)
+    # Sort by datetime
+    schedules.sort(key=lambda x: x["datetime"])
+    save_schedules(schedules, guild_id)
+    
+    return schedule_id
+
+
+def remove_schedule(guild_id: int, schedule_id: int):
+    """Remove a scheduled game night by ID.
+    
+    Args:
+        guild_id: The Discord guild (server) ID
+        schedule_id: The ID of the schedule to remove
+        
+    Returns:
+        True if schedule was found and removed, False otherwise
+    """
+    schedules = load_schedules(guild_id)
+    original_count = len(schedules)
+    schedules = [s for s in schedules if s.get("id") != schedule_id]
+    
+    if len(schedules) < original_count:
+        save_schedules(schedules, guild_id)
+        return True
+    return False
 

@@ -8,6 +8,97 @@ from translations import get_translation
 logger = logging.getLogger(__name__)
 
 
+class VoteRatingModal(discord.ui.Modal):
+    """Modal for entering a rating for a selected game."""
+    
+    def __init__(self, game_key, game_data, games, guild_id, user_id, embed, view):
+        t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
+        game_name = game_data["name"]
+        game_emoji = game_data.get("emoji", "🎮")
+        
+        # Modal title with game name (truncate if too long for Discord's 45 char limit)
+        title_text = f"{game_emoji} {game_name}"
+        if len(title_text) > 45:
+            title_text = title_text[:42] + "..."
+        super().__init__(title=t("vote_modal_title", game=title_text))
+        self.game_key = game_key
+        self.game_data = game_data
+        self.games = games
+        self.guild_id = guild_id
+        self.user_id = user_id
+        self.embed = embed
+        self.view = view
+        
+        # Check for existing rating
+        votes = load_votes(guild_id)
+        existing_rating = None
+        if user_id in votes:
+            existing_rating = votes[user_id].get("votes", {}).get(game_key)
+        
+        # Rating input (1-5)
+        self.rating_input = discord.ui.TextInput(
+            label=t("vote_modal_rating_label"),
+            placeholder=t("vote_modal_rating_placeholder"),
+            default=str(existing_rating) if existing_rating else "5",
+            max_length=1,
+            required=True
+        )
+        self.add_item(self.rating_input)
+    
+    async def on_submit(self, interaction: discord.Interaction):
+        """Handle modal submission."""
+        t = lambda k, **kw: get_translation(k, user_id=self.user_id, guild_id=self.guild_id, **kw)
+        user_id = str(interaction.user.id)
+        
+        # Parse rating
+        rating_str = self.rating_input.value.strip()
+        try:
+            rating = int(rating_str)
+            if rating < 1 or rating > 5:
+                raise ValueError("Rating out of range")
+        except ValueError:
+            await interaction.response.send_message(
+                t("vote_modal_invalid_rating"),
+                ephemeral=True
+            )
+            return
+        
+        # Save the vote
+        votes = load_votes(self.guild_id)
+        
+        from translations import get_user_language
+        
+        if user_id not in votes:
+            votes[user_id] = {
+                "username": str(interaction.user),
+                "votes": {},
+                "language": get_user_language(user_id, self.guild_id)
+            }
+        
+        votes[user_id]["votes"][self.game_key] = rating
+        votes[user_id]["username"] = str(interaction.user)
+        # Mark as available when voting (remove unavailable flag)
+        votes[user_id]["unavailable"] = False
+        save_votes(votes, self.guild_id)
+        
+        logger.info(f"Vote saved: {interaction.user} (ID: {user_id}) voted {rating}/5 for '{self.game_data['name']}' in guild {self.guild_id}")
+        
+        # Update the embed table
+        await interaction.response.defer(ephemeral=True)
+        
+        # Update the view's user_votes to reflect the change
+        self.view.user_votes[user_id] = votes[user_id]
+        
+        # Update embed table
+        await self.view._update_embed_table(interaction, user_id)
+        
+        # Send confirmation (ephemeral message - user will see it briefly)
+        await interaction.followup.send(
+            t("vote_modal_success", game=self.game_data['name'], rating=rating, stars="⭐" * rating),
+            ephemeral=True
+        )
+
+
 def _generate_vote_table_fields(games, user_votes_data):
     """Generate embed table fields for the voting table.
     
@@ -77,7 +168,7 @@ def _generate_vote_table_fields(games, user_votes_data):
 
 
 class VotingView(discord.ui.View):
-    """Interactive voting view with dropdowns for games and ratings."""
+    """Interactive voting view with dropdown for game selection (opens modal for rating)."""
     
     def __init__(self, games, user_votes, guild_id, user_id):
         super().__init__(timeout=300)  # 5 minute timeout
@@ -98,39 +189,44 @@ class VotingView(discord.ui.View):
         self.restore_button.callback = self.on_restore_clicked
         self.add_item(self.restore_button)
         
-        # Create select menu with games (showing ID and name)
-        # Note: Discord Select menus preserve selected value - we'll update placeholder to show selection
-        self.game_select = discord.ui.Select(
-            placeholder=t("vote_select_game"),
-            options=[
-                discord.SelectOption(
-                    label=f"[{game_data.get('id', '?')}] {game_data['name']}",
-                    description=t("vote_players_desc", min=game_data['min_players'], max=game_data['max_players']),
-                    value=game_key,
-                    emoji=game_data.get("emoji", "🎮")
-                )
-                for game_key, game_data in sorted(games.items(), key=lambda x: (x[1].get("id", 9999), x[1]["name"]))
-            ]
-        )
-        self.game_select.callback = self.on_game_selected
-        self.add_item(self.game_select)
+        # Create select menus with games (Discord limit: 25 options per menu)
+        # Split games into chunks of 25
+        sorted_games = sorted(games.items(), key=lambda x: (x[1].get("id", 9999), x[1]["name"]))
+        MAX_OPTIONS_PER_MENU = 25
+        game_chunks = [sorted_games[i:i + MAX_OPTIONS_PER_MENU] for i in range(0, len(sorted_games), MAX_OPTIONS_PER_MENU)]
         
-        # Create rating select menu (no default value - defaults set dynamically based on selections)
-        self.rating_select = discord.ui.Select(
-            placeholder=t("vote_rating_placeholder"),
-            options=[
-                discord.SelectOption(label=t("vote_rating_5"), value="5", emoji="⭐"),
-                discord.SelectOption(label=t("vote_rating_4"), value="4", emoji="⭐"),
-                discord.SelectOption(label=t("vote_rating_3"), value="3", emoji="⭐"),
-                discord.SelectOption(label=t("vote_rating_2"), value="2", emoji="⭐"),
-                discord.SelectOption(label=t("vote_rating_1"), value="1", emoji="⭐"),
-            ]
-        )
-        self.rating_select.callback = self.on_rating_selected
-        self.add_item(self.rating_select)
+        # Store select menus for callback handling
+        self.game_selects = []
         
-        self.selected_game = None
-        self.selected_rating = None
+        for chunk_idx, chunk in enumerate(game_chunks):
+            # Create placeholder text
+            if len(game_chunks) > 1:
+                start_id = chunk[0][1].get("id", 1)
+                end_id = chunk[-1][1].get("id", 1)
+                placeholder = f"{t('vote_select_game')} (IDs {start_id}-{end_id})"
+            else:
+                placeholder = t("vote_select_game")
+            
+            game_select = discord.ui.Select(
+                placeholder=placeholder,
+                options=[
+                    discord.SelectOption(
+                        label=f"[{game_data.get('id', '?')}] {game_data['name']}",
+                        description=t("vote_players_desc", min=game_data['min_players'], max=game_data['max_players']),
+                        value=game_key,
+                        emoji=game_data.get("emoji", "🎮")
+                    )
+                    for game_key, game_data in chunk
+                ]
+            )
+            # Create a callback that captures this specific select
+            def make_callback(select_menu):
+                async def callback(interaction: discord.Interaction):
+                    await self.on_game_selected(interaction, select_menu)
+                return callback
+            game_select.callback = make_callback(game_select)
+            self.game_selects.append(game_select)
+            self.add_item(game_select)
     
     async def on_restore_clicked(self, interaction: discord.Interaction):
         """Restore votes from the last voting period - PERSONAL ONLY (doesn't affect others).
@@ -208,38 +304,6 @@ class VotingView(discord.ui.View):
             pass  # Message might already be deleted or interaction expired
     
     
-    def _update_select_placeholders(self):
-        """Update select menu placeholders to show current selections."""
-        t = lambda k, **kw: get_translation(k, user_id=self.user_id, guild_id=self.guild_id, **kw)
-        
-        # Update game select placeholder
-        if self.selected_game and self.selected_game in self.games:
-            game_data = self.games[self.selected_game]
-            game_name = game_data["name"]
-            game_id = game_data.get("id", "?")
-            emoji = game_data.get("emoji", "🎮")
-            display_name = f"{emoji} [{game_id}] {game_name}"
-            if len(display_name) > 75:  # Discord placeholder limit
-                display_name = display_name[:72] + "..."
-            # Check if translation would exceed limit
-            selected_text = t("vote_selected_game", game=display_name)
-            if len(selected_text) > 100:  # Discord placeholder limit
-                self.game_select.placeholder = display_name[:100]
-            else:
-                self.game_select.placeholder = selected_text
-        else:
-            self.game_select.placeholder = t("vote_select_game")
-        
-        # Update rating select placeholder
-        if self.selected_rating:
-            stars = "⭐" * self.selected_rating
-            selected_text = t("vote_selected_rating", rating=self.selected_rating, stars=stars)
-            if len(selected_text) > 100:  # Discord placeholder limit
-                self.rating_select.placeholder = f"{self.selected_rating}/5 {stars}"[:100]
-            else:
-                self.rating_select.placeholder = selected_text
-        else:
-            self.rating_select.placeholder = t("vote_rating_placeholder")
     
     async def _update_embed_table(self, interaction: discord.Interaction, user_id: str):
         """Helper method to update the embed table with current votes."""
@@ -263,144 +327,45 @@ class VotingView(discord.ui.View):
             for field_name, field_value in table_fields:
                 self.embed.add_field(name=field_name, value=field_value, inline=False)
             
-            # Update select placeholders to show current selections
-            self._update_select_placeholders()
-            
             # Edit the original message with updated embed
             await interaction.edit_original_response(embed=self.embed, view=self)
         except Exception as e:
             logger.warning(f"Failed to update embed table: {e}")
     
-    async def on_game_selected(self, interaction: discord.Interaction):
-        """Handle game selection - auto-save if rating is already selected."""
-        self.selected_game = self.game_select.values[0]
-        game_key = self.selected_game
+    async def on_game_selected(self, interaction: discord.Interaction, select: discord.ui.Select = None):
+        """Handle game selection - open modal for rating."""
+        # Get the selected game key from the select menu
+        if select is None:
+            # Fallback: find the select that has values
+            for s in self.game_selects:
+                if s.values:
+                    select = s
+                    break
+        
+        if not select or not select.values:
+            t = lambda k, **kw: get_translation(k, user_id=str(interaction.user.id), guild_id=self.guild_id, **kw)
+            await interaction.response.send_message(
+                "❌ Could not determine selected game. Please try again.",
+                ephemeral=True
+            )
+            return
+        
+        game_key = select.values[0]
+        
+        if game_key not in self.games:
+            t = lambda k, **kw: get_translation(k, user_id=str(interaction.user.id), guild_id=self.guild_id, **kw)
+            await interaction.response.send_message(
+                t("error_game_not_found", game=game_key),
+                ephemeral=True
+            )
+            return
+        
+        game_data = self.games[game_key]
         user_id = str(interaction.user.id)
         self.user_id = user_id
         
-        # Load votes to check existing rating
-        votes = load_votes(self.guild_id)
-        existing_rating = None
-        
-        if user_id in votes:
-            existing_rating = votes[user_id].get("votes", {}).get(game_key)
-        
-        # If there's an existing rating, set it as selected
-        if existing_rating:
-            self.selected_rating = existing_rating
-            # Update rating select to show current rating
-            for option in self.rating_select.options:
-                option.default = (option.value == str(existing_rating))
-        else:
-            # If rating was already selected (user selected rating first), keep it
-            # Otherwise clear it
-            if not self.selected_rating:
-                # Reset rating select defaults
-                for option in self.rating_select.options:
-                    option.default = False
-        
-        # Update placeholders to show selections
-        self._update_select_placeholders()
-        
-        # If both game and rating are now selected, auto-save the vote
-        if self.selected_game and self.selected_rating:
-            # Save the vote
-            if user_id not in votes:
-                votes[user_id] = {
-                    "username": str(interaction.user),
-                    "votes": {}
-                }
-            
-            votes[user_id]["votes"][game_key] = self.selected_rating
-            votes[user_id]["username"] = str(interaction.user)
-            # Mark as available when voting (remove unavailable flag)
-            votes[user_id]["unavailable"] = False
-            save_votes(votes, self.guild_id)
-            
-            # Update local state
-            self.user_votes[user_id] = votes[user_id]
-            
-            game_name = self.games[game_key]["name"]
-            rating_emoji = "⭐" * self.selected_rating
-            
-            logger.info(f"Vote saved: {interaction.user} (ID: {user_id}) voted {self.selected_rating}/5 for '{game_name}'")
-            
-            # Update rating select defaults
-            for option in self.rating_select.options:
-                option.default = (option.value == str(self.selected_rating))
-            
-            # Defer to update embed
-            await interaction.response.defer(ephemeral=True)
-            
-            # Update the embed table (this provides feedback via the updated table)
-            try:
-                await self._update_embed_table(interaction, user_id)
-            except Exception as e:
-                logger.warning(f"Failed to update embed after vote: {e}")
-        else:
-            # Defer silently - don't update the view to avoid resetting the dropdown
-            await interaction.response.defer(ephemeral=True)
-    
-    async def on_rating_selected(self, interaction: discord.Interaction):
-        """Handle rating selection - automatically save vote if game is already selected."""
-        # Use currently selected game or first selected from dropdown
-        if not self.selected_game:
-            if self.game_select.values:
-                self.selected_game = self.game_select.values[0]
-            else:
-                user_id = str(interaction.user.id)
-                t = lambda k, **kw: get_translation(k, user_id=user_id, **kw)
-                await interaction.response.send_message(
-                    t("vote_need_game"),
-                    ephemeral=True
-                )
-                return
-        
-        rating = int(self.rating_select.values[0])
-        self.selected_rating = rating
-        
-        # Automatically save the vote since both game and rating are now selected
-        game_key = self.selected_game
-        user_id = str(interaction.user.id)
-        self.user_id = user_id
-        
-        # Save the vote
-        votes = load_votes(self.guild_id)
-        
-        if user_id not in votes:
-            votes[user_id] = {
-                "username": str(interaction.user),
-                "votes": {}
-            }
-        
-        votes[user_id]["votes"][game_key] = rating
-        votes[user_id]["username"] = str(interaction.user)
-        # Mark as available when voting (remove unavailable flag)
-        votes[user_id]["unavailable"] = False
-        save_votes(votes, self.guild_id)
-        
-        # Update local state
-        self.user_votes[user_id] = votes[user_id]
-        
-        game_name = self.games[game_key]["name"]
-        rating_emoji = "⭐" * rating
-        
-        logger.info(f"Vote saved: {interaction.user} (ID: {user_id}) voted {rating}/5 for '{game_name}'")
-        
-        # Update rating select defaults to reflect selected rating
-        for option in self.rating_select.options:
-            option.default = (option.value == str(rating))
-        
-        # Update placeholders to show selections
-        self._update_select_placeholders()
-        
-        # Defer the interaction first so we can update the embed
-        await interaction.response.defer(ephemeral=True)
-        
-        # Update the embed table (this provides feedback via the updated table)
-        try:
-            await self._update_embed_table(interaction, user_id)
-        except Exception as e:
-            logger.warning(f"Failed to update embed after vote: {e}")
+        # Open modal for rating
+        modal = VoteRatingModal(game_key, game_data, self.games, self.guild_id, user_id, self.embed, self)
+        await interaction.response.send_modal(modal)
     
 
