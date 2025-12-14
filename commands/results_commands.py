@@ -1,7 +1,7 @@
 """Results command."""
 import discord
-from data_manager import load_votes, load_games
-from helpers import require_guild, send_guild_only_error
+from core.data_manager import load_votes, load_games
+from core.helpers import require_guild, send_guild_only_error
 
 def setup_results_commands(bot: discord.ext.commands.Bot):
     """Register results command."""
@@ -114,7 +114,7 @@ def setup_results_commands(bot: discord.ext.commands.Bot):
             game_list = []
             for game_key, game, score in games_data:
                 game_emoji = game.get('emoji', '🎮')
-                marker = "🏆" if game_key == best_game_key else "•"
+                marker = "•"
                 line = f"{marker} {game_emoji} **{game['name']}** - {score} points (Players: {game['min_players']}-{game['max_players']})"
                 store_links = game.get("store_links", "")
                 if store_links:

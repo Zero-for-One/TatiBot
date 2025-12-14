@@ -2,8 +2,8 @@
 import discord
 from discord import app_commands
 import logging
-from data_manager import set_user_language, get_user_language
-from helpers import require_guild, send_guild_only_error
+from core.data_manager import set_user_language, get_user_language
+from core.helpers import require_guild, send_guild_only_error
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ def setup_user_commands(bot: discord.ext.commands.Bot):
         
         if success:
             lang_names = {"en": "English", "fr": "Français"}
-            from translations import get_translation
+            from core.translations import get_translation
             t = lambda k: get_translation(k, lang=lang)
             await interaction.response.send_message(
                 t("language_changed").format(lang=lang_names[lang]),

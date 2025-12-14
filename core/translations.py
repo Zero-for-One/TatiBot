@@ -12,7 +12,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         
         # Game commands
         "game_added": "✅ Added {emoji} '{name}' (Players: {min_players}-{max_players})",
-        "game_removed": "✅ Removed '[{game_id}] {game_name}' from the list",
+        "game_removed": "✅ Removed '{game_name}' from the list",
         "game_exists": "❌ Game '{name}' is already in the list!",
         "game_invalid_min": "❌ Invalid player count! Minimum must be at least 1.",
         "game_invalid_max": "❌ Invalid player count! Maximum must be >= minimum.",
@@ -22,6 +22,9 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "game_remove_title": "🗑️ Remove Game",
         "game_remove_description": "Select a game from the dropdown below to remove it.",
         "game_remove_select": "Choose a game to remove...",
+        "game_remove_confirm_title": "⚠️ Confirm Removal",
+        "game_remove_confirm_label": "Confirm Removal",
+        "game_remove_confirm_placeholder": "Click Submit to remove '{game_name}'",
         "game_update_modal_title": "🔧 Update Game",
         "game_update_name_label": "Game Name",
         "game_update_name_placeholder": "Enter the game name",
@@ -51,25 +54,25 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         
         # Voting
         "vote_title": "🎮 Game Voting",
-        "vote_description": "Select a game and rate it from 1-5 stars.\nGames not voted on default to rating 0.",
-        "vote_modal_title": "⭐ Vote: {game}",
+        "vote_description": "Select a game and rate it from 1-5.\nGames not voted on default to rating 0.",
+        "vote_modal_title": "Vote: {game}",
         "vote_modal_rating_label": "Rating (1-5)",
         "vote_modal_rating_placeholder": "Enter a rating from 1 to 5 (default: 5)",
         "vote_modal_invalid_rating": "❌ Invalid rating! Please enter a number from 1 to 5.",
-        "vote_modal_success": "✅ Voted {rating}/5 {stars} for **{game}**!",
+        "vote_modal_success": "✅ Voted {rating}/5 for **{game}**!",
         "vote_table_title": "📊 Your Votes",
         "vote_table_continued": "📊 Your Votes (cont.)",
         "vote_select_game": "Choose a game to vote for...",
         "vote_select_rating": "Choose a rating...",
         "vote_rating_placeholder": "Choose rating (1-5)...",
         "vote_selected_game": "Selected: {game}",
-        "vote_selected_rating": "Selected: {rating}/5 {stars}",
+        "vote_selected_rating": "Selected: {rating}/5",
         "vote_players_desc": "Players: {min}-{max}",
-        "vote_rating_5": "5 - Really want to play ⭐⭐⭐⭐⭐",
-        "vote_rating_4": "4 - Want to play ⭐⭐⭐⭐",
-        "vote_rating_3": "3 - Neutral ⭐⭐⭐",
-        "vote_rating_2": "2 - Don't really want ⭐⭐",
-        "vote_rating_1": "1 - Don't want to play ⭐",
+        "vote_rating_5": "5 - Really want to play",
+        "vote_rating_4": "4 - Want to play",
+        "vote_rating_3": "3 - Neutral",
+        "vote_rating_2": "2 - Don't really want",
+        "vote_rating_1": "1 - Don't want to play",
         "vote_restore_button": "🔄 Restore Last Votes",
         "vote_restore_no_previous": "❌ No previous votes found to restore!",
         "vote_restore_no_user": "❌ You didn't have any votes in any previous period!",
@@ -114,6 +117,22 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "sync_success": "✅ Successfully synced {count} command(s) to this server!\nCommands should be available immediately.",
         "sync_error": "❌ Failed to sync commands: {error}",
         
+        # Export/Import
+        "export_success": "✅ Data exported successfully!\n📁 File: `{filename}`\n\nThis file contains all server data (games, votes, config, schedules).",
+        "export_error": "❌ Failed to export data: {error}",
+        "import_success": "✅ Data imported successfully! ({mode})\n",
+        "import_mode_overwrite": "Overwrite mode",
+        "import_mode_merge": "Merge mode",
+        "import_games": "Games: {count}",
+        "import_votes": "Votes: {count} users",
+        "import_config": "Config: {success}",
+        "import_schedules": "Schedules: {count}",
+        "import_warnings": "⚠️ {count} warning(s) occurred:",
+        "import_error": "❌ Failed to import data: {error}",
+        "import_error_invalid_file": "❌ Invalid file! Please upload a JSON file exported from TatiBot.",
+        "import_error_invalid_json": "❌ Invalid JSON format: {error}",
+        "import_error_invalid_format": "❌ Invalid data format! The file doesn't appear to be a valid TatiBot export.",
+        
         # Language
         "language_current": "Your current language is: **{lang}**",
         "language_changed": "✅ Language changed to **{lang}**",
@@ -124,14 +143,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "help_title": "🎮 TatiBot Help",
         "help_description": "A Discord bot for organizing game nights! Vote on games and find the perfect match for your group.\n\nEach server has its own game list and votes. Use `/language` to change your preferred language.",
         "help_how_it_works": "📖 How It Works",
-        "help_how_it_works_value": "1. **Vote**: Use `/vote` to rate games from 1-5 stars\n"
+        "help_how_it_works_value": "1. **Vote**: Use `/vote` to rate games from 1-5\n"
                                    "2. **Availability**: Voting marks you as available for game night\n"
                                    "3. **Unavailable**: Use `/unavailable` to mark yourself unavailable (votes preserved)\n"
                                    "4. **Available**: Use `/available` to mark yourself available again (votes restored)\n"
                                    "5. **Results**: Use `/results` to see all compatible games with pagination\n"
                                    "6. **Auto Reset**: Votes reset every Wednesday at 11:59 PM\n"
                                    "7. **Reminders**: Bot reminds everyone to vote (configurable per server, default: Sunday 8 PM)",
-        "help_voting_commands": "⭐ Voting Commands",
+        "help_voting_commands": "Voting Commands",
         "help_voting_commands_value": "**`/vote`** - Open interactive voting interface\n"
                                       "• Select games from dropdown and rate them 1-5\n"
                                       "• Default rating is 5 if not specified\n"
@@ -167,6 +186,12 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
                                         "• Choose English (en) or Français (fr)\n"
                                         "• All bot messages will appear in your language\n\n"
                                         "**`/clearvotes`** - Manually clear all votes (saves backup)\n\n"
+                                        "**`/exportdata`** - Export all server data as JSON (admin only)\n"
+                                        "• Creates a backup file with games, votes, config, and schedules\n"
+                                        "• Download the file to keep a backup or transfer to another server\n\n"
+                                        "**`/importdata <file> [overwrite]`** - Import server data from JSON file (admin only)\n"
+                                        "• Upload a previously exported JSON file\n"
+                                        "• Use overwrite=true to completely replace data, or false to merge\n\n"
                                         "**`/sync`** - Force sync commands (admin only)",
         "help_scheduling": "📅 Scheduling",
         "help_scheduling_value": "**`/schedule <date> <time> [description]`** - Schedule a game night\n"
@@ -179,14 +204,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
                                  "• Default: Sunday at 20:00 (8 PM)\n\n"
                                  "**`/configgamenight <day> <hour> <minute>`** - Configure recurring game night (admin only)\n\n"
                                  "**`/config`** - View current server configuration",
-        "help_rating_system": "⭐ Rating System",
-        "help_rating_system_value": "**1 ⭐** - Don't want to play\n"
-                                    "**2 ⭐⭐** - Prefer not to\n"
-                                    "**3 ⭐⭐⭐** - Neutral/OK\n"
-                                    "**4 ⭐⭐⭐⭐** - Want to play\n"
-                                    "**5 ⭐⭐⭐⭐⭐** - Really want to play!",
+        "help_rating_system": "Rating System",
+        "help_rating_system_value": "**1** - Don't want to play\n"
+                                    "**2** - Prefer not to\n"
+                                    "**3** - Neutral/OK\n"
+                                    "**4** - Want to play\n"
+                                    "**5** - Really want to play!",
         "help_tips": "💡 Tips",
-        "help_tips_value": "• Use game IDs for easier management (shown in `/listgames`)\n"
+        "help_tips_value": "• Games are organized by name for easier management\n"
                            "• Add store links (Steam, Epic, etc.) when creating/updating games\n"
                            "• Voting automatically marks you as available\n"
                            "• Use `/unavailable` to mark yourself unavailable (votes are preserved)\n"
@@ -231,7 +256,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         
         # Game commands
         "game_added": "✅ Ajouté {emoji} '{name}' (Joueurs : {min_players}-{max_players})",
-        "game_removed": "✅ Supprimé '[{game_id}] {game_name}' de la liste",
+        "game_removed": "✅ Supprimé '{game_name}' de la liste",
         "game_exists": "❌ Le jeu '{name}' est déjà dans la liste !",
         "game_invalid_min": "❌ Nombre de joueurs invalide ! Le minimum doit être d'au moins 1.",
         "game_invalid_max": "❌ Nombre de joueurs invalide ! Le maximum doit être >= au minimum.",
@@ -241,6 +266,9 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "game_remove_title": "🗑️ Supprimer un Jeu",
         "game_remove_description": "Sélectionnez un jeu dans le menu déroulant ci-dessous pour le supprimer.",
         "game_remove_select": "Choisissez un jeu à supprimer...",
+        "game_remove_confirm_title": "⚠️ Confirmer la Suppression",
+        "game_remove_confirm_label": "Confirmer la Suppression",
+        "game_remove_confirm_placeholder": "Cliquez sur Soumettre pour supprimer '{game_name}'",
         "game_update_modal_title": "🔧 Modifier un Jeu",
         "game_update_name_label": "Nom du Jeu",
         "game_update_name_placeholder": "Entrez le nom du jeu",
@@ -275,11 +303,11 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "vote_table_continued": "📊 Vos Votes (suite)",
         "vote_select_game": "Choisissez un jeu pour voter...",
         "vote_select_rating": "Choisissez une note...",
-        "vote_modal_title": "⭐ Vote : {game}",
+        "vote_modal_title": "Vote : {game}",
         "vote_modal_rating_label": "Note (1-5)",
         "vote_modal_rating_placeholder": "Entrez une note de 1 à 5 (par défaut : 5)",
         "vote_modal_invalid_rating": "❌ Note invalide ! Veuillez entrer un nombre de 1 à 5.",
-        "vote_modal_success": "✅ Voté {rating}/5 {stars} pour **{game}** !",
+        "vote_modal_success": "✅ Voté {rating}/5 pour **{game}** !",
         "vote_restore_button": "🔄 Restaurer les Derniers Votes",
         "vote_restore_no_previous": "❌ Aucun vote précédent trouvé à restaurer !",
         "vote_restore_no_user": "❌ Vous n'aviez aucun vote dans aucune période précédente !",
@@ -320,6 +348,22 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         # Sync
         "sync_success": "✅ {count} commande(s) synchronisée(s) avec succès sur ce serveur !\nLes commandes devraient être disponibles immédiatement.",
         "sync_error": "❌ Échec de la synchronisation des commandes : {error}",
+        
+        # Export/Import
+        "export_success": "✅ Données exportées avec succès !\n📁 Fichier : `{filename}`\n\nCe fichier contient toutes les données du serveur (jeux, votes, config, planifications).",
+        "export_error": "❌ Échec de l'exportation des données : {error}",
+        "import_success": "✅ Données importées avec succès ! ({mode})\n",
+        "import_mode_overwrite": "Mode remplacement",
+        "import_mode_merge": "Mode fusion",
+        "import_games": "Jeux : {count}",
+        "import_votes": "Votes : {count} utilisateurs",
+        "import_config": "Config : {success}",
+        "import_schedules": "Planifications : {count}",
+        "import_warnings": "⚠️ {count} avertissement(s) :",
+        "import_error": "❌ Échec de l'importation des données : {error}",
+        "import_error_invalid_file": "❌ Fichier invalide ! Veuillez télécharger un fichier JSON exporté depuis TatiBot.",
+        "import_error_invalid_json": "❌ Format JSON invalide : {error}",
+        "import_error_invalid_format": "❌ Format de données invalide ! Le fichier ne semble pas être un export TatiBot valide.",
         
         # Language
         "language_current": "Votre langue actuelle est : **{lang}**",
@@ -374,6 +418,12 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
                                         "• Choisissez English (en) ou Français (fr)\n"
                                         "• Tous les messages du bot apparaîtront dans votre langue\n\n"
                                         "**`/clearvotes`** - Effacer manuellement tous les votes (sauvegarde une copie)\n\n"
+                                        "**`/exportdata`** - Exporter toutes les données du serveur en JSON (admin uniquement)\n"
+                                        "• Crée un fichier de sauvegarde avec jeux, votes, config et planifications\n"
+                                        "• Téléchargez le fichier pour garder une sauvegarde ou transférer vers un autre serveur\n\n"
+                                        "**`/importdata <file> [overwrite]`** - Importer les données du serveur depuis un fichier JSON (admin uniquement)\n"
+                                        "• Téléchargez un fichier JSON précédemment exporté\n"
+                                        "• Utilisez overwrite=true pour remplacer complètement les données, ou false pour fusionner\n\n"
                                         "**`/sync`** - Forcer la synchronisation des commandes (admin uniquement)",
         "help_scheduling": "📅 Planification",
         "help_scheduling_value": "**`/schedule <date> <time> [description]`** - Planifier une soirée de jeu\n"
@@ -386,12 +436,12 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
                                  "• Par défaut : dimanche à 20:00 (20h)\n\n"
                                  "**`/configgamenight <day> <hour> <minute>`** - Configurer la soirée de jeu récurrente (admin uniquement)\n\n"
                                  "**`/config`** - Voir la configuration actuelle du serveur",
-        "help_rating_system": "⭐ Système de Notation",
-        "help_rating_system_value": "**1 ⭐** - Ne veut pas jouer\n"
-                                    "**2 ⭐⭐** - Préfère ne pas\n"
-                                    "**3 ⭐⭐⭐** - Neutre/OK\n"
-                                    "**4 ⭐⭐⭐⭐** - Veut jouer\n"
-                                    "**5 ⭐⭐⭐⭐⭐** - Veut vraiment jouer !",
+        "help_rating_system": "Système de Notation",
+        "help_rating_system_value": "**1** - Ne veut pas jouer\n"
+                                    "**2** - Préfère ne pas\n"
+                                    "**3** - Neutre/OK\n"
+                                    "**4** - Veut jouer\n"
+                                    "**5** - Veut vraiment jouer !",
         "help_tips": "💡 Conseils",
         "help_tips_value": "• Utilisez les ID de jeu pour une gestion plus facile (affichés dans `/listgames`)\n"
                            "• Ajoutez des liens de magasin (Steam, Epic, etc.) lors de la création/modification des jeux\n"
@@ -444,7 +494,7 @@ def get_user_language(user_id: str, guild_id: int, votes: dict = None) -> str:
         Language code ('en' or 'fr')
     """
     if votes is None:
-        from data_manager import load_votes
+        from .data_manager import load_votes
         votes = load_votes(guild_id)
     
     user_data = votes.get(str(user_id), {})
@@ -500,7 +550,7 @@ def set_user_language(user_id: str, lang: str, votes: dict = None) -> bool:
         return False
     
     if votes is None:
-        from data_manager import load_votes, save_votes
+        from .data_manager import load_votes, save_votes
         votes = load_votes()
         should_save = True
     else:
@@ -517,7 +567,7 @@ def set_user_language(user_id: str, lang: str, votes: dict = None) -> bool:
         votes[user_id_str]["language"] = lang
     
     if should_save:
-        from data_manager import save_votes
+        from .data_manager import save_votes
         save_votes(votes)
     
     return True

@@ -1,8 +1,8 @@
 """Common helper functions for commands."""
 import discord
 from typing import Optional, Callable
-from translations import get_translation
-from permissions import can_manage_games
+from .translations import get_translation
+from .permissions import can_manage_games
 
 
 def require_guild(interaction: discord.Interaction) -> Optional[tuple]:

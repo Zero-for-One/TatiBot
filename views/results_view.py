@@ -31,7 +31,7 @@ class ResultsPaginationView(discord.ui.View):
     
     def create_embed(self, best_game_key: str = None, best_game_data: dict = None, best_score: int = None, voters: list = None) -> discord.Embed:
         """Create embed for current page."""
-        from translations import get_translation
+        from core.translations import get_translation
         t = lambda k, **kw: get_translation(k, user_id=self.user_id, guild_id=self.guild_id, **kw)
         
         embed = discord.Embed(
@@ -56,7 +56,7 @@ class ResultsPaginationView(discord.ui.View):
         
         for game_key, game, score in current_data:
             game_emoji = game.get('emoji', '🎮')
-            marker = "🏆" if game_key == best_game_key else "•"
+                marker = "•"
             line = f"{marker} {game_emoji} **{game['name']}** - {score} points (Players: {game['min_players']}-{game['max_players']})"
             # Add store links if available
             store_links = game.get("store_links", "")

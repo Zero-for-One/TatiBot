@@ -1,16 +1,122 @@
-"""Game configuration commands (emoji, roles)."""
+"""Game management commands (add, remove, update, list, configure)."""
 import discord
 from discord import app_commands
 import logging
 import re
-from data_manager import load_games, save_games, load_server_config, save_server_config
-from helpers import require_game_permission, require_admin, send_guild_only_error, send_permission_error, send_admin_error
+from core.data_manager import load_games, save_games, load_server_config, save_server_config
+from core.helpers import require_game_permission, require_admin, send_guild_only_error, send_permission_error, send_admin_error
+from views.game_views import UpdateGameView, AddGameModal, RemoveGameView, GameListPaginationView
 
 logger = logging.getLogger(__name__)
 
 
-def setup_game_config_commands(bot: discord.ext.commands.Bot):
-    """Register game configuration commands."""
+def setup_game_commands(bot: discord.ext.commands.Bot):
+    """Register all game management commands."""
+    
+    # ========== Game CRUD Commands ==========
+    
+    @bot.tree.command(name="addgame", description="Add a new game to the list")
+    async def addgame(interaction: discord.Interaction):
+        """Add a new game to the voting list using a form."""
+        result = require_game_permission(interaction)
+        if result is None:
+            if not interaction.guild:
+                await send_guild_only_error(interaction)
+            else:
+                await send_permission_error(interaction, interaction.guild.id, str(interaction.user.id))
+            return
+        
+        guild_id, user_id, _ = result
+        modal = AddGameModal(guild_id, user_id)
+        await interaction.response.send_modal(modal)
+    
+    
+    @bot.tree.command(name="removegame", description="Remove a game from the list using a dropdown")
+    async def removegame(interaction: discord.Interaction):
+        """Remove a game from the voting list using a dropdown menu."""
+        result = require_game_permission(interaction)
+        if result is None:
+            if not interaction.guild:
+                await send_guild_only_error(interaction)
+            else:
+                await send_permission_error(interaction, interaction.guild.id, str(interaction.user.id))
+            return
+        
+        guild_id, user_id, t = result
+        games = load_games(guild_id)
+        
+        if not games:
+            await interaction.response.send_message(t("error_no_games"), ephemeral=True)
+            return
+        
+        embed = discord.Embed(
+            title=t("game_remove_title"),
+            description=t("game_remove_description"),
+            color=discord.Color.red()
+        )
+        
+        view = RemoveGameView(games, guild_id, user_id)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    
+    
+    @bot.tree.command(name="updategame", description="Update a game's properties using an interactive menu")
+    async def updategame(interaction: discord.Interaction):
+        """Update properties of an existing game using dropdown and modal."""
+        result = require_game_permission(interaction)
+        if result is None:
+            if not interaction.guild:
+                await send_guild_only_error(interaction)
+            else:
+                await send_permission_error(interaction, interaction.guild.id, str(interaction.user.id))
+            return
+        
+        guild_id, user_id, t = result
+        games = load_games(guild_id)
+        
+        if not games:
+            await interaction.response.send_message(t("error_no_games"), ephemeral=True)
+            return
+        
+        embed = discord.Embed(
+            title=t("game_update_title"),
+            description=t("game_update_description"),
+            color=discord.Color.blue()
+        )
+        
+        view = UpdateGameView(games, guild_id, user_id)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    
+    
+    @bot.tree.command(name="listgames", description="Show all available games")
+    async def listgames(interaction: discord.Interaction):
+        """List all available games."""
+        from core.helpers import require_guild
+        
+        result = require_guild(interaction)
+        if result is None:
+            await send_guild_only_error(interaction)
+            return
+        
+        guild_id, user_id, t = result
+        games = load_games(guild_id)
+        
+        if not games:
+            await interaction.response.send_message(t("error_no_games"))
+            return
+        
+        # Prepare game list as tuples (game_key, game_data) sorted by ID and name
+        games_list = sorted(
+            [(key, game_data) for key, game_data in games.items()],
+            key=lambda x: (x[1].get("id", 9999), x[1]["name"])
+        )
+        
+        # Create pagination view
+        view = GameListPaginationView(games_list, guild_id, user_id)
+        embed = view.create_embed()
+        
+        await interaction.response.send_message(embed=embed, view=view)
+    
+    # ========== Game Configuration Commands ==========
     
     @bot.tree.command(name="setgameemoji", description="Change the emoji/emote for a game")
     @app_commands.describe(
@@ -61,8 +167,7 @@ def setup_game_config_commands(bot: discord.ext.commands.Bot):
         game_list = []
         for game_data in sorted(games.values(), key=lambda x: (x.get("id", 9999), x["name"])):
             emoji_display = game_data.get("emoji", "🎮")
-            game_id = game_data.get("id", "?")
-            line = f"{emoji_display} **[{game_id}] {game_data['name']}** - Players: {game_data['min_players']}-{game_data['max_players']}"
+            line = f"{emoji_display} **{game_data['name']}** - Players: {game_data['min_players']}-{game_data['max_players']}"
             store_links = game_data.get("store_links", "")
             if store_links:
                 line += f"\n   🔗 {store_links}"

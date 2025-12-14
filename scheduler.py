@@ -4,8 +4,8 @@ import logging
 from pathlib import Path
 from datetime import datetime, timedelta
 from apscheduler.triggers.cron import CronTrigger
-from data_manager import save_old_votes, clear_votes, load_server_config
-from config import GUILDS_DIR
+from core.data_manager import save_old_votes, clear_votes, load_server_config
+from core.config import GUILDS_DIR
 
 logger = logging.getLogger(__name__)
 

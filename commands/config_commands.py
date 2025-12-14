@@ -2,8 +2,8 @@
 import discord
 from discord import app_commands
 import logging
-from data_manager import load_server_config, save_server_config
-from helpers import require_admin, send_guild_only_error, send_admin_error, require_guild
+from core.data_manager import load_server_config, save_server_config
+from core.helpers import require_admin, send_guild_only_error, send_admin_error, require_guild
 
 logger = logging.getLogger(__name__)
 

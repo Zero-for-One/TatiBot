@@ -3,8 +3,8 @@ import discord
 from discord import app_commands
 import logging
 from datetime import datetime
-from data_manager import add_schedule, load_schedules
-from helpers import require_guild, send_guild_only_error
+from core.data_manager import add_schedule, load_schedules
+from core.helpers import require_guild, send_guild_only_error
 
 logger = logging.getLogger(__name__)
 

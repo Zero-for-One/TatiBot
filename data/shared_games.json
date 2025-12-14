@@ -1,0 +1,1551 @@
+{
+  "rematch": {
+    "id": 1,
+    "name": "Rematch",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/2138720",
+    "tags": [
+      "Immersive",
+      "Real Time Tactics",
+      "Character Customization",
+      "Third Person",
+      "Online Co-Op",
+      "Third-Person Shooter",
+      "eSports",
+      "Action RTS",
+      "Football (Soccer)",
+      "Multiplayer"
+    ],
+    "remote_play_together": false
+  },
+  "path of exile 2": {
+    "id": 2,
+    "name": "Path of Exile 2",
+    "min_players": 1,
+    "max_players": 6,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/2694490",
+    "tags": [
+      "Action RPG",
+      "Free to Play",
+      "Adventure",
+      "Character Customization",
+      "Online Co-Op",
+      "Hack and Slash",
+      "RPG",
+      "Dark",
+      "Isometric",
+      "Early Access"
+    ],
+    "remote_play_together": false
+  },
+  "enshrouded": {
+    "id": 4,
+    "name": "Enshrouded",
+    "min_players": 1,
+    "max_players": 16,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1203620",
+    "tags": [
+      "Action RPG",
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Character Customization",
+      "Building",
+      "Online Co-Op",
+      "RPG",
+      "Exploration",
+      "Indie"
+    ],
+    "remote_play_together": false
+  },
+  "dying light": {
+    "id": 5,
+    "name": "Dying Light",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/239140",
+    "tags": [
+      "Gore"
+    ],
+    "remote_play_together": false
+  },
+  "valorant": {
+    "id": 6,
+    "name": "Valorant",
+    "min_players": 1,
+    "max_players": 5,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "peak": {
+    "id": 7,
+    "name": "Peak",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/3527290",
+    "tags": [
+      "Procedural Generation",
+      "Adventure",
+      "Character Customization",
+      "Mystery",
+      "Platformer",
+      "Atmospheric",
+      "Online Co-Op",
+      "First-Person",
+      "Exploration",
+      "Multiplayer"
+    ],
+    "remote_play_together": false
+  },
+  "civisation vi": {
+    "id": 8,
+    "name": "Civisation VI",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/289070",
+    "tags": [
+      "4X",
+      "Atmospheric",
+      "Building",
+      "City Builder",
+      "Co-op",
+      "Grand Strategy",
+      "Great Soundtrack",
+      "Hex Grid",
+      "Historical",
+      "Management",
+      "Moddable",
+      "Multiplayer",
+      "Online Co-Op",
+      "Simulation",
+      "Singleplayer",
+      "Strategy",
+      "Tactical",
+      "Turn-Based",
+      "Turn-Based Strategy",
+      "War"
+    ],
+    "remote_play_together": true
+  },
+  "worms w.m.d": {
+    "id": 9,
+    "name": "Worms W.M.D",
+    "min_players": 1,
+    "max_players": 6,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/327030",
+    "tags": [
+    ],
+    "remote_play_together": true
+  },
+  "geoguessr": {
+    "id": 10,
+    "name": "Geoguessr",
+    "min_players": 1,
+    "max_players": 99,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "rv there yet": {
+    "id": 11,
+    "name": "RV there yet",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/3949040",
+    "tags": [
+      "Driving",
+      "Psychological Horror",
+      "Controller",
+      "Adventure",
+      "Character Customization",
+      "Atmospheric",
+      "Online Co-Op",
+      "First-Person",
+      "Exploration",
+      "Indie"
+    ],
+    "remote_play_together": false
+  },
+  "microworks": {
+    "id": 12,
+    "name": "MicroWorks",
+    "min_players": 1,
+    "max_players": 16,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1233410",
+    "tags": [
+      "Character Customization",
+      "Third Person",
+      "First-Person",
+      "Cartoony",
+      "Indie",
+      "Funny",
+      "Multiplayer",
+      "3D",
+      "Cute",
+      "Minigames"
+    ],
+    "remote_play_together": false
+  },
+  "minecraft": {
+    "id": 13,
+    "name": "Minecraft",
+    "min_players": 1,
+    "max_players": 99,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "arc raiders": {
+    "id": 14,
+    "name": "Arc raiders",
+    "min_players": 1,
+    "max_players": 3,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1808500",
+    "tags": [
+      "Survival",
+      "Character Customization",
+      "Third Person",
+      "Atmospheric",
+      "Online Co-Op",
+      "Realistic",
+      "Third-Person Shooter",
+      "Combat",
+      "Multiplayer",
+      "Crafting"
+    ],
+    "remote_play_together": false
+  },
+  "left 4 dead 2": {
+    "id": 15,
+    "name": "Left 4 Dead 2",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/550",
+    "tags": [
+      "Zombies",
+      "Survival",
+      "Tactical",
+      "Adventure",
+      "FPS",
+      "Moddable",
+      "Online Co-Op",
+      "First-Person",
+      "Gore",
+      "Singleplayer"
+    ],
+    "remote_play_together": true
+  },
+  "league of legends": {
+    "id": 16,
+    "name": "League of Legends",
+    "min_players": 1,
+    "max_players": 5,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "path of exile": {
+    "id": 17,
+    "name": "Path of Exile",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/238960",
+    "tags": [
+      "Action RPG",
+      "Free to Play",
+      "Character Customization",
+      "Adventure",
+      "Massively Multiplayer",
+      "Online Co-Op",
+      "Hack and Slash",
+      "RPG",
+      "Singleplayer",
+      "Isometric"
+    ],
+    "remote_play_together": true
+  },
+  "wreckfest": {
+    "id": 18,
+    "name": "Wreckfest",
+    "min_players": 1,
+    "max_players": 30,
+    "emoji": "🏎️",
+    "store_links": "https://store.steampowered.com/app/228380",
+    "tags": [
+      "Driving",
+      "Third Person",
+      "Atmospheric",
+      "Realistic",
+      "Indie",
+      "Singleplayer",
+      "Funny",
+      "Early Access",
+      "Multiplayer",
+      "Action"
+    ],
+    "remote_play_together": false
+  },
+  "borderlands 4": {
+    "id": 19,
+    "name": "Borderlands 4",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1285190",
+    "remote_play_together": false
+  },
+  "tricky tower": {
+    "id": 20,
+    "name": "Tricky tower",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/437920",
+    "tags": [
+      "Building",
+      "Local Multiplayer",
+      "Online Co-Op",
+      "Cartoony",
+      "Puzzle",
+      "Singleplayer",
+      "Funny",
+      "Multiplayer",
+      "Strategy",
+      "Stylized"
+    ],
+    "remote_play_together": true
+  },
+  "runescape dragonwilds": {
+    "id": 21,
+    "name": "Runescape Dragonwilds",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1374490",
+    "tags": [
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Third Person",
+      "Building",
+      "Online Co-Op",
+      "RPG",
+      "Exploration",
+      "Singleplayer",
+      "Early Access"
+    ],
+    "remote_play_together": false
+  },
+  "what the tune": {
+    "id": 22,
+    "name": "What the Tune?!",
+    "min_players": 1,
+    "max_players": 99,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "overcooked 2": {
+    "id": 24,
+    "name": "Overcooked 2",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/728880",
+    "tags": [
+      "Controller",
+      "Local Multiplayer",
+      "Online Co-Op",
+      "Indie",
+      "Singleplayer",
+      "Funny",
+      "Multiplayer",
+      "Cute",
+      "Strategy",
+      "Action"
+    ],
+    "remote_play_together": true
+  },
+  "pubg": {
+    "id": 25,
+    "name": "PUBG",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/4077740",
+    "tags": [
+      "Survival",
+      "Character Customization",
+      "FPS",
+      "Mystery",
+      "Online Co-Op",
+      "Conspiracy",
+      "Dark",
+      "First-Person",
+      "Exploration",
+      "Multiplayer"
+    ],
+    "remote_play_together": false
+  },
+  "raft": {
+    "id": 26,
+    "name": "Raft",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/648800",
+    "tags": [
+      "Underwater",
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Massively Multiplayer",
+      "Building",
+      "Online Co-Op",
+      "First-Person",
+      "Indie",
+      "Singleplayer"
+    ],
+    "remote_play_together": false
+  },
+  "terraforming mars": {
+    "id": 27,
+    "name": "Terraforming Mars",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/800270",
+    "tags": [
+      "Board Game",
+      "Mars",
+      "Turn-Based",
+      "Base Building",
+      "Local Multiplayer",
+      "2.5D",
+      "Turn-Based Strategy",
+      "Grand Strategy",
+      "Singleplayer",
+      "Multiplayer"
+    ],
+    "remote_play_together": true
+  },
+  "plateup!": {
+    "id": 28,
+    "name": "PlateUp!",
+    "min_players": 1,
+    "max_players": 20,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1599600",
+    "tags": [
+      "Procedural Generation",
+      "Base Building",
+      "Controller",
+      "Building",
+      "Roguelike",
+      "Online Co-Op",
+      "Top-Down",
+      "Singleplayer",
+      "Roguelite",
+      "Funny"
+    ],
+    "remote_play_together": true
+  },
+  "party animals": {
+    "id": 29,
+    "name": "Party Animals",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1260320",
+    "tags": [
+      "Fighting",
+      "Local Multiplayer",
+      "Online Co-Op",
+      "3D Fighter",
+      "Indie",
+      "Funny",
+      "Multiplayer",
+      "Cute",
+      "Action",
+      "Action-Adventure"
+    ],
+    "remote_play_together": true
+  },
+  "gtfo": {
+    "id": 30,
+    "name": "GTFO",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/493520",
+    "remote_play_together": false
+  },
+  "phasmophobia": {
+    "id": 31,
+    "name": "Phasmophobia",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/739630",
+    "tags": [
+      "Tactical",
+      "Psychological Horror",
+      "Mystery",
+      "Online Co-Op",
+      "Dark",
+      "First-Person",
+      "Indie",
+      "Singleplayer",
+      "Early Access",
+      "Multiplayer"
+    ],
+    "remote_play_together": true
+  },
+  "bronzebeard's tavern": {
+    "id": 32,
+    "name": "Bronzebeard's Tavern",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/2422870",
+    "tags": [
+      "Free to Play",
+      "Third Person",
+      "Online Co-Op",
+      "Cartoony",
+      "Funny",
+      "Multiplayer",
+      "Time Management",
+      "3D",
+      "Dwarf",
+      "Stylized"
+    ],
+    "remote_play_together": false
+  },
+  "unrailed": {
+    "id": 33,
+    "name": "Unrailed",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1016920",
+    "tags": [
+      "Procedural Generation",
+      "Survival",
+      "Controller",
+      "Local Multiplayer",
+      "Online Co-Op",
+      "Indie",
+      "Funny",
+      "Voxel",
+      "Isometric",
+      "Multiplayer"
+    ],
+    "remote_play_together": true
+  },
+  "moving out": {
+    "id": 34,
+    "name": "Moving Out",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/996770",
+    "tags": [
+      "Controller",
+      "Local Multiplayer",
+      "Great Soundtrack",
+      "Indie",
+      "Singleplayer",
+      "Funny",
+      "Puzzle",
+      "Multiplayer",
+      "Action",
+      "Comedy"
+    ],
+    "remote_play_together": true
+  },
+  "once human": {
+    "id": 35,
+    "name": "Once Human",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/2139460",
+    "tags": [
+      "Survival",
+      "Free to Play",
+      "Base Building",
+      "Adventure",
+      "Third Person",
+      "Massively Multiplayer",
+      "Online Co-Op",
+      "RPG",
+      "Singleplayer",
+      "Multiplayer"
+    ],
+    "remote_play_together": false
+  },
+  "scrap mechanic": {
+    "id": 36,
+    "name": "Scrap Mechanic",
+    "min_players": 1,
+    "max_players": 5,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/387990",
+    "tags": [
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Third Person",
+      "Building",
+      "Moddable",
+      "Online Co-Op",
+      "First-Person",
+      "Indie",
+      "Singleplayer"
+    ],
+    "remote_play_together": false
+  },
+  "skate.": {
+    "id": 37,
+    "name": "skate.",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/3354750",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "warhammer 40,000: darktide": {
+    "id": 38,
+    "name": "Warhammer 40,000: Darktide",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1361210",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "jump space": {
+    "id": 39,
+    "name": "Jump Space",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1757300",
+    "tags": [
+      "Adventure",
+      "FPS",
+      "Spaceships",
+      "Flight",
+      "Atmospheric",
+      "Dark",
+      "First-Person",
+      "Exploration",
+      "Indie",
+      "Roguelite"
+    ],
+    "remote_play_together": false
+  },
+  "lethal company": {
+    "id": 40,
+    "name": "Lethal Company",
+    "min_players": 1,
+    "max_players": 4,
+    "max_players_modded": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1966720",
+    "tags": [
+      "Procedural Generation",
+      "Psychological Horror",
+      "Adventure",
+      "Atmospheric",
+      "Online Co-Op",
+      "First-Person",
+      "Exploration",
+      "Aliens",
+      "Funny",
+      "Early Access"
+    ],
+    "remote_play_together": false
+  },
+  "risk of rain 2": {
+    "id": 41,
+    "name": "Risk of rain 2",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/632360",
+    "tags": [
+      "Looter Shooter",
+      "Soundtrack",
+      "Survival",
+      "Third Person",
+      "Roguelike",
+      "Online Co-Op",
+      "Great Soundtrack",
+      "Third-Person Shooter",
+      "Indie",
+      "Singleplayer"
+    ],
+    "remote_play_together": true
+  },
+  "diablo 4": {
+    "id": 42,
+    "name": "Diablo 4",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/2344520",
+    "tags": [
+      "Gore",
+      "Violent"
+    ],
+    "remote_play_together": false
+  },
+  "overwatch": {
+    "id": 43,
+    "name": "Overwatch",
+    "min_players": 1,
+    "max_players": 5,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/2357570",
+    "tags": [
+      "Free to Play",
+      "Third Person",
+      "FPS",
+      "Online Co-Op",
+      "First-Person",
+      "Third-Person Shooter",
+      "Lore-Rich",
+      "Multiplayer",
+      "Hero Shooter",
+      "Action"
+    ],
+    "remote_play_together": false
+  },
+  "barotrauma": {
+    "id": 44,
+    "name": "Barotrauma",
+    "min_players": 1,
+    "max_players": 16,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/602960",
+    "tags": [
+      "Underwater",
+      "Survival",
+      "Psychological Horror",
+      "Submarine",
+      "Moddable",
+      "Gore",
+      "Singleplayer",
+      "Naval",
+      "Multiplayer",
+      "2D"
+    ],
+    "remote_play_together": false
+  },
+  "void crew": {
+    "id": 45,
+    "name": "Void Crew",
+    "min_players": 1,
+    "max_players": 6,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1063420",
+    "tags": [
+      "Space Sim",
+      "Adventure",
+      "Character Customization",
+      "Flight",
+      "Online Co-Op",
+      "First-Person",
+      "Exploration",
+      "Indie",
+      "Singleplayer",
+      "Roguelite"
+    ],
+    "remote_play_together": false
+  },
+  "astroneer": {
+    "id": 46,
+    "name": "Astroneer",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/361420",
+    "tags": [
+      "Automation",
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Third Person",
+      "Building",
+      "Atmospheric",
+      "Exploration",
+      "Indie",
+      "Singleplayer"
+    ],
+    "remote_play_together": true
+  },
+  "ark survival evolved": {
+    "id": 47,
+    "name": "Ark Survival Evolved",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/346110",
+    "remote_play_together": false
+  },
+  "temtem": {
+    "id": 48,
+    "name": "Temtem",
+    "min_players": 1,
+    "max_players": 2,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/745920",
+    "tags": [
+      "Turn-Based Combat",
+      "Adventure",
+      "Character Customization",
+      "Collectathon",
+      "RPG",
+      "Cartoony",
+      "Exploration",
+      "Story Rich",
+      "Multiplayer",
+      "3D"
+    ],
+    "remote_play_together": true
+  },
+  "guild wars 1": {
+    "id": 49,
+    "name": "Guild Wars 1",
+    "min_players": 1,
+    "max_players": 99,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/29720",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "dinkum": {
+    "id": 50,
+    "name": "Dinkum",
+    "min_players": 1,
+    "max_players": 6,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1062520",
+    "tags": [
+      "Adventure",
+      "Building",
+      "Online Co-Op",
+      "RPG",
+      "Exploration",
+      "Indie",
+      "Singleplayer",
+      "Life Sim",
+      "Hunting",
+      "Crafting"
+    ],
+    "remote_play_together": false
+  },
+  "volcanoid": {
+    "id": 51,
+    "name": "Volcanoid",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/951440",
+    "tags": [
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Building",
+      "Online Co-Op",
+      "Atmospheric",
+      "First-Person",
+      "Exploration",
+      "Singleplayer",
+      "Early Access"
+    ],
+    "remote_play_together": false
+  },
+  "no man's sky": {
+    "id": 52,
+    "name": "No Man's Sky",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/275850",
+    "tags": [
+      "Action",
+      "Adventure",
+      "Atmospheric",
+      "Crafting",
+      "Exploration",
+      "FPS",
+      "First-Person",
+      "Indie",
+      "Multiplayer",
+      "Open World",
+      "Open World Survival Craft",
+      "Procedural Generation",
+      "Sandbox",
+      "Sci-fi",
+      "Simulation",
+      "Singleplayer",
+      "Space",
+      "Space Sim",
+      "Survival",
+      "VR"
+    ],
+    "remote_play_together": false
+  },
+  "dune awakening": {
+    "id": 53,
+    "name": "Dune Awakening",
+    "min_players": 1,
+    "max_players": 10,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1172710",
+    "remote_play_together": false
+  },
+  "ultimate chicken horse": {
+    "id": 54,
+    "name": "Ultimate Chicken Horse",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🐔",
+    "store_links": "https://store.steampowered.com/app/386940",
+    "tags": [
+      "Platformer",
+      "Local Multiplayer",
+      "Online Co-Op",
+      "Parkour",
+      "Precision Platformer",
+      "Funny",
+      "Multiplayer",
+      "Cute",
+      "2D",
+      "Action"
+    ],
+    "remote_play_together": true
+  },
+  "valheim": {
+    "id": 55,
+    "name": "Valheim",
+    "min_players": 1,
+    "max_players": 10,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/892970",
+    "tags": [
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Third Person",
+      "Mythology",
+      "Building",
+      "Online Co-Op",
+      "Exploration",
+      "Indie",
+      "Singleplayer"
+    ],
+    "remote_play_together": false
+  },
+  "r.e.p.o.": {
+    "id": 56,
+    "name": "R.E.P.O.",
+    "min_players": 1,
+    "max_players": 6,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/3241660",
+    "tags": [
+      "Procedural Generation",
+      "Survival",
+      "Online Co-Op",
+      "First-Person",
+      "Exploration",
+      "Funny",
+      "Early Access",
+      "Multiplayer",
+      "3D",
+      "Action Roguelike"
+    ],
+    "remote_play_together": false
+  },
+  "deep rock galactic": {
+    "id": 57,
+    "name": "Deep rock galactic",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/548430",
+    "tags": [
+      "Procedural Generation",
+      "Looter Shooter",
+      "Survival",
+      "Class-Based",
+      "FPS",
+      "Atmospheric",
+      "Dark",
+      "First-Person",
+      "Exploration",
+      "Combat"
+    ],
+    "remote_play_together": true
+  },
+  "helldivers 2": {
+    "id": 58,
+    "name": "Helldivers 2",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/553850",
+    "remote_play_together": false
+  },
+  "terraria": {
+    "id": 59,
+    "name": "Terraria",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/105600",
+    "tags": [
+      "Survival",
+      "Adventure",
+      "Building",
+      "Platformer",
+      "Online Co-Op",
+      "Atmospheric",
+      "RPG",
+      "Exploration",
+      "Indie",
+      "Singleplayer"
+    ],
+    "remote_play_together": true
+  },
+  "tft": {
+    "id": 60,
+    "name": "TFT",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "don't starve together": {
+    "id": 61,
+    "name": "Don't Starve together",
+    "min_players": 1,
+    "max_players": 6,
+    "max_players_modded": 25,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/322330",
+    "tags": [
+      "Survival",
+      "Adventure",
+      "Roguelike",
+      "Online Co-Op",
+      "Atmospheric",
+      "Indie",
+      "Singleplayer",
+      "Funny",
+      "Multiplayer",
+      "Crafting"
+    ],
+    "remote_play_together": true
+  },
+  "rocket league": {
+    "id": 62,
+    "name": "Rocket League",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "necesse": {
+    "id": 63,
+    "name": "Necesse",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1169040",
+    "tags": [
+      "Automation",
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Building",
+      "Online Co-Op",
+      "Atmospheric",
+      "RPG",
+      "Exploration",
+      "Indie"
+    ],
+    "remote_play_together": false
+  },
+  "sea of thieves": {
+    "id": 64,
+    "name": "Sea of thieves",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1172620",
+    "tags": [
+      "Adventure",
+      "FPS",
+      "Massively Multiplayer",
+      "Atmospheric",
+      "Online Co-Op",
+      "Pirates",
+      "Great Soundtrack",
+      "First-Person",
+      "Exploration",
+      "Singleplayer"
+    ],
+    "remote_play_together": true
+  },
+  "starjew valley": {
+    "id": 65,
+    "name": "Starjew Valley",
+    "min_players": 1,
+    "max_players": 7,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/413150",
+    "tags": [
+      "2D",
+      "Agriculture",
+      "Building",
+      "Casual",
+      "Crafting",
+      "Cute",
+      "Dating Sim",
+      "Farming Sim",
+      "Fishing",
+      "Great Soundtrack",
+      "Indie",
+      "Life Sim",
+      "Multiplayer",
+      "Open World",
+      "Pixel Graphics",
+      "RPG",
+      "Relaxing",
+      "Sandbox",
+      "Simulation",
+      "Singleplayer"
+    ],
+    "remote_play_together": true
+  },
+  "guild wars 2": {
+    "id": 66,
+    "name": "Guild wars 2",
+    "min_players": 1,
+    "max_players": 5,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1284210",
+    "tags": [
+      "Class-Based",
+      "Free to Play",
+      "Adventure",
+      "Character Customization",
+      "Third Person",
+      "Massively Multiplayer",
+      "Online Co-Op",
+      "Atmospheric",
+      "RPG",
+      "Exploration"
+    ],
+    "remote_play_together": false
+  },
+  "baldur's gate 3": {
+    "id": 67,
+    "name": "Baldur's Gate 3",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1086940",
+    "remote_play_together": false
+  },
+  "hytale": {
+    "id": 68,
+    "name": "Hytale",
+    "min_players": 1,
+    "max_players": 16,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1408080",
+    "tags": [
+      "Character Customization",
+      "Massively Multiplayer",
+      "Building",
+      "Funny",
+      "Early Access",
+      "Multiplayer",
+      "Minigames",
+      "3D Platformer",
+      "Action",
+      "Comedy"
+    ],
+    "remote_play_together": false
+  },
+  "world of warcraft": {
+    "id": 69,
+    "name": "World of Warcraft",
+    "min_players": 1,
+    "max_players": 5,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1533560",
+    "tags": [
+      "Real Time Tactics",
+      "Medieval",
+      "Tactical RPG",
+      "Third Person",
+      "Hack and Slash",
+      "RPG",
+      "Indie",
+      "Nature",
+      "Singleplayer",
+      "Magic"
+    ],
+    "remote_play_together": false
+  },
+  "v rising": {
+    "id": 70,
+    "name": "V Rising",
+    "min_players": 1,
+    "max_players": 10,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1604030",
+    "tags": [
+      "Survival",
+      "Base Building",
+      "Adventure",
+      "Massively Multiplayer",
+      "Building",
+      "Online Co-Op",
+      "Hack and Slash",
+      "Exploration",
+      "Singleplayer",
+      "Multiplayer"
+    ],
+    "remote_play_together": false
+  },
+  "rust": {
+    "id": 71,
+    "name": "Rust",
+    "min_players": 1,
+    "max_players": 350,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/252490",
+    "tags": [
+      "Survival",
+      "Adventure",
+      "FPS",
+      "Building",
+      "Online Co-Op",
+      "First-Person",
+      "Indie",
+      "Early Access",
+      "Multiplayer",
+      "Nudity"
+    ],
+    "remote_play_together": true
+  },
+  "pummel party": {
+    "id": 73,
+    "name": "Pummel Party",
+    "min_players": 4,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/880940",
+    "tags": [
+      "Board Game",
+      "Controller",
+      "Local Multiplayer",
+      "Online Co-Op",
+      "Gore",
+      "Indie",
+      "Singleplayer",
+      "Funny",
+      "Multiplayer",
+      "Minigames"
+    ],
+    "remote_play_together": true
+  },
+  "golf gang": {
+    "id": 74,
+    "name": "Golf Gang",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1151050",
+    "tags": [
+      "Golf",
+      "Online Co-Op",
+      "Indie",
+      "Singleplayer",
+      "Funny",
+      "Multiplayer",
+      "Cute",
+      "Action",
+      "Combat Racing",
+      "Casual"
+    ],
+    "remote_play_together": false
+  },
+  "smite 2": {
+    "id": 75,
+    "name": "Smite 2",
+    "min_players": 1,
+    "max_players": 5,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/2437170",
+    "tags": [
+      "Adventure",
+      "Third Person",
+      "Mythology",
+      "Massively Multiplayer",
+      "Online Co-Op",
+      "RPG",
+      "Early Access",
+      "Combat",
+      "Multiplayer",
+      "Strategy"
+    ],
+    "remote_play_together": false
+  },
+  "offworld": {
+    "id": 77,
+    "name": "Offworld",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/271240",
+    "tags": [
+      "Colony Sim",
+      "Survival",
+      "Base Building",
+      "Atmospheric",
+      "Online Co-Op",
+      "City Builder",
+      "Exploration",
+      "Singleplayer",
+      "Multiplayer",
+      "3D"
+    ],
+    "remote_play_together": false
+  },
+  "fall guys": {
+    "id": 80,
+    "name": "Fall guys",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1677740",
+    "tags": [
+      "Survival",
+      "Free to Play",
+      "Character Customization",
+      "Massively Multiplayer",
+      "Battle Royale",
+      "Online Co-Op",
+      "Indie",
+      "Funny",
+      "Multiplayer",
+      "Cute"
+    ],
+    "remote_play_together": false
+  },
+  "redout 2": {
+    "id": 81,
+    "name": "Redout 2",
+    "min_players": 1,
+    "max_players": 12,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1799930",
+    "tags": [
+      "Space Sim",
+      "Driving",
+      "Soundtrack",
+      "Controller",
+      "Character Customization",
+      "Flight",
+      "eSports",
+      "3D",
+      "Combat Racing",
+      "Competitive"
+    ],
+    "remote_play_together": true
+  },
+  "blazerush": {
+    "id": 83,
+    "name": "BlazeRush",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/302710",
+    "tags": [
+      "Driving",
+      "Controller",
+      "Arena Shooter",
+      "Local Multiplayer",
+      "Online Co-Op",
+      "Isometric",
+      "Multiplayer",
+      "Vehicular Combat",
+      "Action",
+      "Combat Racing"
+    ],
+    "remote_play_together": true
+  },
+  "counter strike 2": {
+    "id": 84,
+    "name": "Counter Strike 2",
+    "min_players": 1,
+    "max_players": 2,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/730",
+    "tags": [
+      "Tactical",
+      "FPS",
+      "Moddable",
+      "Online Co-Op",
+      "Realistic",
+      "War",
+      "First-Person",
+      "eSports",
+      "Multiplayer",
+      "Strategy"
+    ],
+    "remote_play_together": true
+  },
+  "age of empires 2": {
+    "id": 85,
+    "name": "Age of Empire 2",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/813780",
+    "tags": [
+      "Medieval",
+      "Base Building",
+      "Historical",
+      "Online Co-Op",
+      "War",
+      "City Builder",
+      "Action RTS",
+      "Singleplayer",
+      "Isometric",
+      "Multiplayer"
+    ],
+    "remote_play_together": false
+  },
+  "age of empires 3": {
+    "id": 86,
+    "name": "Age of Empire 3",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/933110",
+    "tags": [
+      "Medieval",
+      "Classic",
+      "Tactical",
+      "Base Building",
+      "Adventure",
+      "Historical",
+      "Great Soundtrack",
+      "City Builder",
+      "Singleplayer",
+      "Isometric"
+    ],
+    "remote_play_together": false
+  },
+  "age of empires 4": {
+    "id": 87,
+    "name": "Age of Empire 4",
+    "min_players": 1,
+    "max_players": 8,
+    "emoji": "🎮",
+    "store_links": "https://store.steampowered.com/app/1466860",
+    "tags": [
+      "Medieval",
+      "Base Building",
+      "Historical",
+      "Online Co-Op",
+      "War",
+      "City Builder",
+      "Action RTS",
+      "Singleplayer",
+      "Isometric",
+      "Multiplayer"
+    ],
+    "remote_play_together": false
+  },
+  "jklm popsauce": {
+    "id": 88,
+    "name": "JKLM PopSauce",
+    "min_players": 1,
+    "max_players": 99,
+    "emoji": "🎮"
+  },
+  "scribl.io": {
+    "id": 89,
+    "name": "Scribl.io",
+    "min_players": 1,
+    "max_players": 99,
+    "emoji": "🎮"
+  },
+  "codenames": {
+    "id": 90,
+    "name": "Codenames",
+    "min_players": 1,
+    "max_players": 99,
+    "emoji": "🎮",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  },
+  "board games arena": {
+    "id": 91,
+    "name": "Board Games Arena",
+    "min_players": 1,
+    "max_players": 4,
+    "emoji": "🎲",
+    "store_links": "",
+    "tags": [
+    ],
+    "remote_play_together": false
+  }
+}

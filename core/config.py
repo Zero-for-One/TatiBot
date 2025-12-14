@@ -17,8 +17,13 @@ def get_guild_dir(guild_id: int) -> Path:
     return guild_dir
 
 
+def get_shared_games_file() -> Path:
+    """Get the shared games file path (centralized for all servers)."""
+    return DATA_DIR / "shared_games.json"
+
+
 def get_games_file(guild_id: int) -> Path:
-    """Get the games file path for a specific guild."""
+    """Get the games file path for a specific guild (legacy - for backward compatibility)."""
     return get_guild_dir(guild_id) / "games.json"
 
 

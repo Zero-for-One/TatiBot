@@ -7,10 +7,10 @@ import logging
 from dotenv import load_dotenv
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from logger_config import setup_logging
+from core.logger_config import setup_logging
 from scheduler import setup_scheduler
 from commands import (
-    game_crud, game_config, voting_commands, 
+    game_commands, voting_commands, 
     results_commands, admin_commands, user_commands,
     schedule_commands, config_commands
 )
@@ -92,8 +92,7 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
             pass
 
 # Register all command groups
-game_crud.setup_game_crud_commands(bot)
-game_config.setup_game_config_commands(bot)
+game_commands.setup_game_commands(bot)
 voting_commands.setup_voting_commands(bot)
 results_commands.setup_results_commands(bot)
 admin_commands.setup_admin_commands(bot)

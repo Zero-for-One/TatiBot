@@ -2,8 +2,8 @@
 import discord
 import asyncio
 import logging
-from data_manager import load_votes, save_votes, find_user_votes_in_old_files
-from translations import get_translation
+from core.data_manager import load_votes, save_votes, find_user_votes_in_old_files
+from core.translations import get_translation
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class VoteRatingModal(discord.ui.Modal):
         # Save the vote
         votes = load_votes(self.guild_id)
         
-        from translations import get_user_language
+        from core.translations import get_user_language
         
         if user_id not in votes:
             votes[user_id] = {
@@ -94,7 +94,7 @@ class VoteRatingModal(discord.ui.Modal):
         
         # Send confirmation (ephemeral message - user will see it briefly)
         await interaction.followup.send(
-            t("vote_modal_success", game=self.game_data['name'], rating=rating, stars="⭐" * rating),
+            t("vote_modal_success", game=self.game_data['name'], rating=rating, stars=""),
             ephemeral=True
         )
 
@@ -130,13 +130,13 @@ def _generate_vote_table_fields(games, user_votes_data):
         players = f"{game_data['min_players']}-{game_data['max_players']}"
         
         # More compact format - shorter game names, simpler rating
-        # Include emoji and ID in the display
-        display_name = f"{emoji} [{game_id}] {game_name}"
-        if len(display_name) > 22:
-            display_name = display_name[:19] + "..."
+        # Include emoji only (no ID)
+        display_name = f"{emoji} {game_name}"
+        if len(display_name) > 25:
+            display_name = display_name[:22] + "..."
         
         if rating > 0:
-            rating_display = f"{rating}/5 {'⭐' * rating}"
+            rating_display = f"{rating}/5"
         else:
             rating_display = "0/5"
         
@@ -223,9 +223,7 @@ class VotingView(discord.ui.View):
             
             # Create placeholder text
             if len(game_chunks) > 1:
-                start_id = chunk[0][1].get("id", 1)
-                end_id = chunk[-1][1].get("id", 1)
-                placeholder = f"{t('vote_select_game')} (IDs {start_id}-{end_id})"
+                placeholder = t('vote_select_game')
             else:
                 placeholder = t("vote_select_game")
             
@@ -234,7 +232,7 @@ class VotingView(discord.ui.View):
             for game_key, game_data in chunk:
                 options.append(
                     discord.SelectOption(
-                        label=f"[{game_data.get('id', '?')}] {game_data['name']}",
+                        label=game_data['name'],
                         description=t("vote_players_desc", min=game_data['min_players'], max=game_data['max_players']),
                         value=game_key,
                         emoji=game_data.get("emoji", "🎮")

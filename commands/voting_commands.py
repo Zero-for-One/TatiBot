@@ -2,9 +2,9 @@
 import discord
 from discord import app_commands
 import logging
-from data_manager import load_games, load_votes
+from core.data_manager import load_games, load_votes
 from views.voting_view import VotingView, _generate_vote_table_fields
-from translations import get_translation
+from core.translations import get_translation
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +42,13 @@ def generate_vote_table_fields(games, user_votes_data):
         players = f"{game_data['min_players']}-{game_data['max_players']}"
         
         # More compact format - shorter game names, simpler rating
-        # Include emoji and ID in the display
-        display_name = f"{emoji} [{game_id}] {game_name}"
-        if len(display_name) > 22:
-            display_name = display_name[:19] + "..."
+        # Include emoji only (no ID)
+        display_name = f"{emoji} {game_name}"
+        if len(display_name) > 25:
+            display_name = display_name[:22] + "..."
         
         if rating > 0:
-            rating_display = f"{rating}/5 {'⭐' * rating}"
+            rating_display = f"{rating}/5"
         else:
             rating_display = "0/5"
         
@@ -159,11 +159,11 @@ def setup_voting_commands(bot: discord.ext.commands.Bot):
             if rating > 0:
                 rating_emoji = "⭐" * rating
                 vote_list.append(
-                    f"{emoji} **[{game_id}] {game_data['name']}** - {rating}/5 {rating_emoji}"
+                    f"{emoji} **{game_data['name']}** - {rating}/5 {rating_emoji}"
                 )
             else:
                 vote_list.append(
-                    f"{emoji} **[{game_id}] {game_data['name']}** - 0/5 {t('myvotes_not_voted')}"
+                    f"{emoji} **{game_data['name']}** - 0/5 {t('myvotes_not_voted')}"
                 )
         
         embed.description = "\n".join(vote_list)
@@ -191,7 +191,7 @@ def setup_voting_commands(bot: discord.ext.commands.Bot):
         t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
         votes = load_votes(guild_id)
         
-        from data_manager import save_votes
+        from core.data_manager import save_votes
         
         # Initialize user entry if it doesn't exist
         if user_id not in votes:
@@ -235,7 +235,7 @@ def setup_voting_commands(bot: discord.ext.commands.Bot):
         t = lambda k, **kw: get_translation(k, user_id=user_id, guild_id=guild_id, **kw)
         votes = load_votes(guild_id)
         
-        from data_manager import save_votes
+        from core.data_manager import save_votes
         
         # Initialize user entry if it doesn't exist
         if user_id not in votes:

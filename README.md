@@ -13,7 +13,7 @@ A Discord bot to help organize game nights by allowing friends to vote on games 
 - ⏰ **Customizable Reminders**: Configure per-server reminder schedules (default: Sunday 8 PM)
 - 🔄 **Auto Reset**: Automatically resets votes every Wednesday at 11:59 PM with backup
 - 💾 **Vote Restoration**: Restore your personal votes from the previous voting period
-- 🗂️ **Game IDs**: Easy game management with unique IDs for each game
+- 🗂️ **Centralized Games**: Shared game database with server-specific enable lists
 - 🔗 **Store Links**: Add Steam, Epic, or other store links to games
 - 🌐 **Multi-Language Support**: Choose between English and Français (French)
 - 🏢 **Per-Server Data**: Each Discord server has its own separate game list and votes
@@ -198,51 +198,73 @@ The bot should now be online in your Discord server!
 
 ## Project Structure
 
-```
-TatiBot/
-├── bot.py                 # Main bot entry point
-├── config.py              # Configuration and constants
-├── data_manager.py        # Data loading/saving functions
-├── logger_config.py       # Logging configuration
-├── scheduler.py           # Scheduled tasks (reminders, resets, cleanup)
-├── translations.py        # Translation strings (English/French)
-├── helpers.py             # Common helper functions
-├── permissions.py         # Permission checking utilities
-├── commands/              # Command modules
-│   ├── game_crud.py       # Game CRUD commands (add, remove, update, list)
-│   ├── game_config.py    # Game configuration (emoji, roles)
-│   ├── voting_commands.py # Voting commands
-│   ├── results_commands.py # Results command
-│   ├── admin_commands.py # Admin commands (clear, sync)
-│   ├── user_commands.py   # User commands (language, help)
-│   ├── schedule_commands.py # Schedule commands
-│   └── config_commands.py # Configuration commands
-├── views/                 # Discord UI components
-│   ├── voting_view.py     # Interactive voting interface
-│   └── game_update.py     # Game update interface
-├── data/                  # Data storage
-│   └── guilds/            # Per-server data (one folder per server)
-│       └── {guild_id}/    # Server-specific data
-│           ├── games.json      # Games list for this server
-│           ├── votes.json      # Current votes for this server
-│           ├── config.json     # Server configuration (reminders, roles)
-│           ├── schedules.json  # Scheduled game nights
-│           └── votes.old.*.json # Vote backups (auto-created)
-└── logs/                  # Log files
-    └── bot_YYYY-MM-DD.log # Daily log files (created at midnight)
-```
+The bot is organized into clear modules for maintainability:
+
+### Core Module (`core/`)
+Contains all core utilities and shared functionality:
+- **`config.py`**: File paths and configuration constants
+- **`data_manager.py`**: Data loading/saving (games, votes, config, schedules)
+- **`helpers.py`**: Common helper functions (permissions, error messages)
+- **`permissions.py`**: Permission checking utilities
+- **`logger_config.py`**: Logging setup and configuration
+- **`translations.py`**: Multi-language translation strings (English/French)
+
+### Commands Module (`commands/`)
+All Discord slash commands organized by functionality:
+- **`game_commands.py`**: Game management (add, remove, update, list, emoji, roles)
+- **`voting_commands.py`**: Voting commands (vote, myvotes, available, unavailable)
+- **`results_commands.py`**: Results display command
+- **`schedule_commands.py`**: Scheduling commands (schedule, schedules)
+- **`config_commands.py`**: Server configuration (reminder, game night schedule)
+- **`admin_commands.py`**: Admin-only commands (clear votes, sync, export/import)
+- **`user_commands.py`**: User commands (language, help)
+
+### Views Module (`views/`)
+Discord UI components (modals, views, buttons):
+- **`game_views.py`**: Game management UI (add/update/remove modals, list pagination)
+- **`voting_view.py`**: Interactive voting interface
+- **`results_view.py`**: Results pagination view
+
+### Root Files
+- **`bot.py`**: Main entry point - bot initialization and command registration
+- **`scheduler.py`**: Scheduled tasks (reminders, vote resets, cleanup)
+
+### Data Storage (`data/`)
+- **`shared_games.json`**: Centralized game definitions (all servers)
+- **`guilds/{guild_id}/`**: Per-server data
+  - `games.json`: List of enabled game keys for this server
+  - `votes.json`: Current votes for this server
+  - `config.json`: Server configuration
+  - `schedules.json`: Scheduled game nights
+  - `votes_backup_YYYY-MM-DD.json`: Vote backups (auto-created)
+
+### Logs (`logs/`)
+- **`bot_YYYY-MM-DD.log`**: Daily log files (created at midnight, auto-deleted after 7 days)
 
 ## Data Storage
 
-The bot stores data per-server in the `data/guilds/` directory:
-- Each Discord server gets its own folder: `data/guilds/{server_id}/`
-- `games.json` - List of all games with IDs, names, player counts, emojis, and store links (per server)
-- `votes.json` - Current votes, availability status, and language preferences (per server)
-- `config.json` - Server configuration (reminder schedule, game night schedule, game management roles)
-- `schedules.json` - Scheduled game nights with dates and descriptions
-- `votes.old.YYYY-MM-DD.json` - Automatic vote backups when votes are reset (per server)
+The bot uses a hybrid data architecture:
 
-**Important**: Each server has completely separate game lists and votes. Users on different servers cannot see each other's games or votes.
+### Shared Games Database
+- **`data/shared_games.json`**: Centralized database of all game definitions
+  - Contains: id, name, min_players, max_players, emoji, store_links, tags, remote_play_together
+  - All servers share this database for game details
+  - Games are identified by unique keys (lowercase game names)
+
+### Per-Server Data
+The bot stores server-specific data in the `data/guilds/` directory:
+- Each Discord server gets its own folder: `data/guilds/{server_id}/`
+- **`games.json`** - List of game keys enabled on this server (references shared games)
+- **`votes.json`** - Current votes, availability status, and language preferences (per server)
+- **`config.json`** - Server configuration (reminder schedule, game night schedule, game management roles)
+- **`schedules.json`** - Scheduled game nights with dates and descriptions
+- **`votes_backup_YYYY-MM-DD.json`** - Automatic vote backups when votes are reset (per server)
+
+**Important**: 
+- Each server has its own list of enabled games (stored as keys in `games.json`)
+- Game details (player counts, store links, emojis) are pulled from the shared database
+- Each server has completely separate votes and configuration
+- Users on different servers cannot see each other's games or votes
 
 Log files are stored in the `logs/` directory:
 - `bot_YYYY-MM-DD.log` - One log file per day (created at midnight)
@@ -311,7 +333,7 @@ Log files are stored in the `logs/` directory:
 
 - **Continuous Running**: The bot needs to be running 24/7 for scheduled tasks (reminders, resets, cleanup) to work
 - **Hosting**: Consider hosting on a cloud service (Heroku, Railway, VPS, etc.) for reliable uptime
-- **Game IDs**: Games are automatically assigned unique IDs when added - use these for easier management
+- **Game Management**: Games are stored in a shared database (`data/shared_games.json`) with server-specific enable lists
 - **Store Links**: Add Steam, Epic, or other store links when creating/updating games - displayed in `/listgames` and `/results`
 - **Role-Based Permissions**: 
   - Admins can always manage games

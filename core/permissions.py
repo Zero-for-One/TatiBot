@@ -1,6 +1,6 @@
 """Permission checking utilities."""
 import discord
-from data_manager import load_server_config
+from .data_manager import load_server_config
 
 
 def can_manage_games(user: discord.Member, guild: discord.Guild) -> bool:

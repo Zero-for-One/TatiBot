@@ -1,4 +1,4 @@
-"""Views and modals for updating and adding games."""
+"""Views and modals for game management (add, update, remove, list)."""
 import discord
 import logging
 from core.data_manager import load_games, load_shared_games, add_game_to_shared, add_game_to_server, remove_game_from_server, get_next_game_id
@@ -6,6 +6,92 @@ from core.translations import get_translation
 
 logger = logging.getLogger(__name__)
 
+
+# ========== Game List Pagination ==========
+
+class GameListPaginationView(discord.ui.View):
+    """View for paginating through game list."""
+    
+    def __init__(self, games_data, guild_id: int, user_id: str):
+        super().__init__(timeout=300)
+        self.games_data = games_data  # List of (game_key, game_data) tuples
+        self.guild_id = guild_id
+        self.user_id = user_id
+        self.current_page = 0
+        self.items_per_page = 15  # Show 15 games per page
+    
+    def get_total_pages(self) -> int:
+        """Calculate total number of pages."""
+        return max(1, (len(self.games_data) + self.items_per_page - 1) // self.items_per_page)
+    
+    def get_current_page_data(self):
+        """Get games for current page."""
+        start = self.current_page * self.items_per_page
+        end = start + self.items_per_page
+        return self.games_data[start:end]
+    
+    def create_embed(self) -> discord.Embed:
+        """Create embed for current page."""
+        from core.translations import get_translation
+        t = lambda k, **kw: get_translation(k, user_id=self.user_id, guild_id=self.guild_id, **kw)
+        
+        current_data = self.get_current_page_data()
+        game_list = []
+        
+        for game_key, game_data in current_data:
+            emoji = game_data.get("emoji", "🎮")
+            line = f"{emoji} **{game_data['name']}** - Players: {game_data['min_players']}-{game_data['max_players']}"
+            store_links = game_data.get("store_links", "")
+            if store_links:
+                # Truncate long store links
+                if len(store_links) > 50:
+                    store_links = store_links[:47] + "..."
+                line += f"\n   🔗 {store_links}"
+            game_list.append(line)
+        
+        total_pages = self.get_total_pages()
+        title = t("game_list_title")
+        if total_pages > 1:
+            title = f"{title} (Page {self.current_page + 1}/{total_pages})"
+        
+        embed = discord.Embed(
+            title=title,
+            description="\n".join(game_list) if game_list else t("error_no_games"),
+            color=discord.Color.green()
+        )
+        
+        embed.set_footer(text=f"Total games: {len(self.games_data)}")
+        
+        return embed
+    
+    @discord.ui.button(label="◀ Previous", style=discord.ButtonStyle.secondary, disabled=True)
+    async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Go to previous page."""
+        if self.current_page > 0:
+            self.current_page -= 1
+            await self.update_message(interaction)
+    
+    @discord.ui.button(label="Next ▶", style=discord.ButtonStyle.secondary)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Go to next page."""
+        total_pages = self.get_total_pages()
+        if self.current_page < total_pages - 1:
+            self.current_page += 1
+            await self.update_message(interaction)
+    
+    async def update_message(self, interaction: discord.Interaction):
+        """Update the message with current page."""
+        total_pages = self.get_total_pages()
+        
+        # Update button states
+        self.previous_button.disabled = (self.current_page == 0)
+        self.next_button.disabled = (self.current_page >= total_pages - 1)
+        
+        embed = self.create_embed()
+        await interaction.response.edit_message(embed=embed, view=self)
+
+
+# ========== Game Update Modal and View ==========
 
 class UpdateGameModal(discord.ui.Modal):
     """Modal for updating game properties."""
@@ -234,6 +320,8 @@ class UpdateGameView(discord.ui.View):
         await interaction.response.send_modal(modal)
 
 
+# ========== Game Removal Modal and View ==========
+
 class RemoveGameConfirmationModal(discord.ui.Modal):
     """Modal for confirming game removal."""
     
@@ -320,6 +408,8 @@ class RemoveGameView(discord.ui.View):
         modal = RemoveGameConfirmationModal(game_key, game_data, self.guild_id, self.user_id)
         await interaction.response.send_modal(modal)
 
+
+# ========== Add Game Modal ==========
 
 class AddGameModal(discord.ui.Modal):
     """Modal for adding a new game."""
@@ -465,4 +555,3 @@ class AddGameModal(discord.ui.Modal):
             t("game_added", emoji=emoji, name=name, min_players=min_players, max_players=max_players),
             ephemeral=False
         )
-
